@@ -1,0 +1,24 @@
+{
+  "name": "prova-wiztech",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/FatecZL-ADS-2026-2-NOITE/Prova-WizTech.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/FatecZL-ADS-2026-2-NOITE/Prova-WizTech/issues"
+  },
+  "homepage": "https://github.com/FatecZL-ADS-2026-2-NOITE/Prova-WizTech#readme",
+  "dependencies": {
+    "leaflet": "^1.9.4"
+  }
+}
