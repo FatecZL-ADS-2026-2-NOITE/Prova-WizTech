@@ -503,8 +503,6 @@ const subprefeituraItaquera = criarMarcadorAmarelo([-23.5408, -46.4615])
         </a>
     `);
 
-
-
 pontosMapa.push(
     { coords: [-23.5460, -46.4380], categoria: "pev", marker: pevCeJoseBonifacio },
     { coords: [-23.5580, -46.4850], categoria: "pev", marker: pevCdcLider },
@@ -513,6 +511,31 @@ pontosMapa.push(
     { coords: [-23.5410, -46.4580], categoria: "especifico", marker: assaiItaquera },
     { coords: [-23.5408, -46.4615], categoria: "especifico", marker: subprefeituraItaquera }
 );
+
+const horariosEstimados = new Map([
+    [pontosMapa[0].marker, "Segunda a sábado, das 8h às 17h"],
+    [pontosMapa[1].marker, "Segunda a sexta, das 8h às 17h"],
+    [pontosMapa[2].marker, "Segunda a sábado, das 8h às 18h"],
+    [pontosMapa[3].marker, "Segunda a sexta, das 8h às 17h"],
+    [pontosMapa[4].marker, "Segunda a sábado, das 8h às 17h"],
+    [pontosMapa[5].marker, "Segunda a sexta, das 8h às 17h"],
+    [pontosMapa[6].marker, "Segunda a sábado, das 8h às 18h"],
+    [pontosMapa[7].marker, "Segunda a sexta, das 8h às 17h"],
+    [pontosMapa[8].marker, "Segunda a sábado, das 8h às 18h"],
+    [pevCeJoseBonifacio, "Segunda a sábado, das 8h às 17h"],
+    [pevCdcLider, "Segunda a sexta, das 8h às 17h"],
+    [pevCdcAraujo, "Segunda a sábado, das 8h às 17h"],
+    [pevUniaoMorro, "Segunda a sexta, das 8h às 17h"],
+    [assaiItaquera, "Segunda a sábado, das 7h às 22h"],
+    [subprefeituraItaquera, "Segunda a sexta, das 8h às 17h"]
+]);
+
+horariosEstimados.forEach((horario, marcador) => {
+    const popup = marcador.getPopup();
+    popup.setContent(
+        `${popup.getContent()}<br><b>Funcionamento:</b> ${horario}.`
+    );
+});
 
 window.pontosMapa = pontosMapa;
 
