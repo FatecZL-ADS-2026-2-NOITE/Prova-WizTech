@@ -4,7 +4,89 @@
     box-sizing: border-box;
 }
 
+body {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+#map-section {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: min(1200px, 92vw);
+    height: 72vh;
+    padding: 18px;
+    margin: 24px auto;
+    border-radius: 28px;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 20px 45px rgba(31, 73, 48, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+#map-section::before {
+    content: "Mapa de Artur Alvim";
+    position: absolute;
+    top: 30px;
+    right: 30px;
+    z-index: 500;
+    padding: 10px 16px;
+    border-radius: 999px;
+    background: rgba(25, 115, 61, 0.9);
+    color: #fff;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    box-shadow: 0 8px 20px rgba(25, 115, 61, 0.22);
+}
+
 #map {
+    position: relative;
     width: 100%;
-    height: 100vh;
+    height: 100%;
+    border-radius: 22px;
+    overflow: hidden;
+    border: 3px solid rgba(18, 86, 45, 0.1);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.6), 0 10px 30px rgba(24, 58, 36, 0.12);
+}
+
+.leaflet-container {
+    width: 100%;
+    height: 100%;
+    background: #dfeec9;
+}
+
+.leaflet-control-zoom {
+    border: none !important;
+    box-shadow: 0 8px 20px rgba(24, 58, 36, 0.15) !important;
+    border-radius: 14px !important;
+    overflow: hidden;
+}
+
+.leaflet-control-zoom a {
+    color: #1d4d32 !important;
+    background: rgba(255, 255, 255, 0.9) !important;
+    border-bottom: 1px solid rgba(24, 58, 36, 0.08) !important;
+}
+
+.leaflet-control-attribution {
+    background: rgba(255, 255, 255, 0.78) !important;
+    border-radius: 10px 0 0 0 !important;
+    padding: 4px 8px !important;
+}
+
+@media (max-width: 640px) {
+    #map-section {
+        width: min(94vw, 100%);
+        height: 62vh;
+        padding: 12px;
+    }
+
 }
