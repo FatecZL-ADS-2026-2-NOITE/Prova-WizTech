@@ -1,25 +1,132 @@
-const centro = [-23.54024, -46.48471];
+﻿const centro = [-23.54024, -46.48471];
+const filtroAtual = { valor: "todos" };
+const mobile = window.matchMedia("(max-width: 640px)").matches;
 
-const limites = L.latLngBounds(
-    [-23.565, -46.515],
-    [-23.515, -46.455]
-);
+const limites = mobile
+    ? L.latLngBounds(
+        [-23.590, -46.560],
+        [-23.500, -46.420]
+    )
+    : L.latLngBounds(
+        [-23.565, -46.515],
+        [-23.515, -46.455]
+    );
 
 const map = L.map("map", {
     minZoom: 14,
-    maxZoom: 22,
+    maxZoom: 20,
     maxBounds: limites,
-    maxBoundsViscosity: 1
+    maxBoundsViscosity: mobile ? 0.7 : 1
 }).setView(centro, 15);
+
+window.addEventListener("resize", () => {
+    map.invalidateSize();
+});
 
 L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     attribution: "&copy; OpenStreetMap contributors",
     minZoom: 14,
-    maxZoom: 19,
+    maxZoom: 20,
     maxNativeZoom: 19
 }).addTo(map);
 
 const camadaLimite = L.featureGroup().addTo(map);
+const limitesArturAlvim = [];
+
+function normalizarLatLng(latlng) {
+    if (Array.isArray(latlng)) {
+        return L.latLng(latlng[0], latlng[1]);
+    }
+
+    if (latlng && typeof latlng.lat === "number" && typeof latlng.lng === "number") { 
+        return L.latLng(latlng.lat, latlng.lng);
+    }
+
+    return null;
+}
+
+function pontoDentroDoPoligono(latlng, coordenadas) {
+    const ponto = normalizarLatLng(latlng);
+    const vertices = Array.isArray(coordenadas)
+        ? coordenadas.map(normalizarLatLng).filter(Boolean)
+        : [];
+
+    if (!ponto || vertices.length === 0) {
+        return false;
+    }
+
+    let dentro = false;
+
+    for (let i = 0, j = vertices.length - 1; i < vertices.length; j = i++) {
+        const xi = vertices[i].lat;
+        const yi = vertices[i].lng;
+        const xj = vertices[j].lat;
+        const yj = vertices[j].lng;
+
+        const interseccao = ((yi > ponto.lng) !== (yj > ponto.lng)) &&
+            (ponto.lat < ((xj - xi) * (ponto.lng - yi)) / (yj - yi + Number.EPSILON) + xi);
+
+        if (interseccao) {
+            dentro = !dentro;
+        }
+    }
+
+    return dentro;
+}
+
+function pontoProximoDaArea(latlng, distanciaMaximaKm = 2.1) {
+    const ponto = normalizarLatLng(latlng);
+    if (!ponto) {
+        return false;
+    }
+
+    const distanciaKm = ponto.distanceTo(L.latLng(centro)) / 1000;
+    return distanciaKm <= distanciaMaximaKm;
+}
+
+function aplicarFiltroPontos() {
+    const pontos = window.pontosMapa || [];
+
+    pontos.forEach(ponto => {
+        let visivel = true;
+
+        if (filtroAtual.valor === "artur-alvim") {
+            visivel = limitesArturAlvim.some(poligono => {
+                const coordenadas = poligono.getLatLngs()[0];
+                return pontoDentroDoPoligono(ponto.coords, coordenadas);
+            });
+        }
+
+        if (filtroAtual.valor === "proximos") {
+            const dentroDaArea = limitesArturAlvim.some(poligono => {
+                const coordenadas = poligono.getLatLngs()[0];
+                return pontoDentroDoPoligono(ponto.coords, coordenadas);
+            });
+            visivel = dentroDaArea || pontoProximoDaArea(ponto.coords);
+        }
+
+        if (visivel && !map.hasLayer(ponto.marker)) {
+            map.addLayer(ponto.marker);
+        }
+
+        if (!visivel && map.hasLayer(ponto.marker)) {
+            map.removeLayer(ponto.marker);
+        }
+    });
+}
+
+function configurarFiltros() {
+    document.querySelectorAll(".filter-btn").forEach(botao => {
+        botao.addEventListener("click", () => {
+            document.querySelectorAll(".filter-btn").forEach(item => {
+                item.classList.toggle("active", item === botao);
+            });
+
+            filtroAtual.valor = botao.dataset.filter;
+            aplicarFiltroPontos();
+        });
+    });
+}
 
 async function carregarLimiteArturAlvim() {
     const url = "https://www.openstreetmap.org/api/0.6/relation/3049500/full";
@@ -37,10 +144,6 @@ async function carregarLimiteArturAlvim() {
             textoXML,
             "application/xml"
         );
-
-        if (documento.querySelector("parsererror")) {
-            throw new Error("Não foi possível interpretar o XML.");
-        }
 
         const nos = new Map();
 
@@ -73,10 +176,6 @@ async function carregarLimiteArturAlvim() {
             .map(membro => vias.get(membro.getAttribute("ref")))
             .filter(caminho => caminho && caminho.length >= 2)
             .map(caminho => [...caminho]);
-
-        if (caminhos.length === 0) {
-            throw new Error("Nenhum trecho do limite foi encontrado.");
-        }
 
         const aneis = [];
 
@@ -125,17 +224,11 @@ async function carregarLimiteArturAlvim() {
                 anel.length >= 4
             ) {
                 aneis.push(anel);
-            } else {
-                console.warn("Um trecho do limite não formou um anel fechado.");
-            }
-        }
-
-        if (aneis.length === 0) {
-            throw new Error("Não foi possível fechar o contorno administrativo.");
+            } 
         }
 
         aneis.forEach(anel => {
-            L.polygon(anel, {
+            const poligono = L.polygon(anel, {
                 color: "#ff6500",
                 weight: 3,
                 opacity: 1,
@@ -147,7 +240,11 @@ async function carregarLimiteArturAlvim() {
                     "<b>Artur Alvim</b><br>Delimitação administrativa"
                 )
                 .addTo(camadaLimite);
+
+            limitesArturAlvim.push(poligono);
         });
+
+        aplicarFiltroPontos();
 
     } catch (erro) {
         console.error("Erro ao carregar o limite de Artur Alvim:", erro);
@@ -156,53 +253,129 @@ async function carregarLimiteArturAlvim() {
 
 carregarLimiteArturAlvim();
 
-// Ecoponto COHAB Artur Alvim
-const cohab = [-23.5408, -46.4790];
+const pontosMapa = [
+    {
+        coords: [-23.5408, -46.4790],
+        marker: L.marker([-23.5408, -46.4790]).bindPopup(`
+            <b>Ecoponto COHAB Artur Alvim</b><br>
+            Avenida Padre Estanislau de Campos, 56<br>
+            <b>Tipo:</b> Ecoponto municipal<br>
+            <a href="https://www.google.com/maps/search/?api=1&query=Ecoponto+COHAB+Artur+Alvim+Sao+Paulo"
+               target="_blank" rel="noopener noreferrer">
+                Ver rota
+            </a>
+        `)
+    },
+    {
+        coords: [-23.5400, -46.4730],
+        marker: L.marker([-23.5400, -46.4730]).bindPopup(`
+            <b>Ecoponto Franquinho</b><br>
+            Rua Praia de Mucuripe, 685<br>
+            Jardim Artur Alvim<br>
+            <b>Tipo:</b> Ecoponto municipal<br>
+            <a href="https://www.google.com/maps/search/?api=1&query=Ecoponto+Franquinho+Sao+Paulo"
+               target="_blank" rel="noopener noreferrer">
+                Ver rota
+            </a>
+        `)
+    },
+    {
+        coords: [-23.5355, -46.4830],
+        marker: L.marker([-23.5355, -46.4830]).bindPopup(`
+            <b>Ecoponto Jardim São Nicolau</b><br>
+            Rua Agreste de Itabaiana, 590<br>
+            Jardim Artur Alvim, São Paulo - SP<br>
+            <b>Tipo:</b> Ponto de descarte<br>
+            <a href="https://www.google.com/maps/search/?api=1&query=Rua+Agreste+de+Itabaiana+590+Sao+Paulo"
+               target="_blank" rel="noopener noreferrer">
+                Ver localização
+            </a>
+        `)
+    },
+    {
+        coords: [-23.5630, -46.4900],
+        marker: L.marker([-23.5630, -46.4900]).bindPopup(`
+            <b>Ecoponto Cidade Líder</b><br>
+            Rua Charles Manguin, esquina com Rua Francesco Melzi<br>
+            <b>Tipo:</b> Ecoponto municipal<br>
+            <a href="https://www.google.com/maps/search/?api=1&query=Ecoponto+Cidade+Lider+Sao+Paulo"
+               target="_blank" rel="noopener noreferrer">
+                Ver rota
+            </a>
+        `)
+    },
+    {
+        coords: [-23.5460, -46.4380],
+        marker: L.marker([-23.5460, -46.4380]).bindPopup(`
+            <b>Ecoponto José Bonifácio</b><br>
+            Rua Ana Perena, altura do nº 110<br>
+            <b>Tipo:</b> Ecoponto municipal<br>
+            <a href="https://www.google.com/maps/search/?api=1&query=Ecoponto+Jose+Bonifacio+Rua+Ana+Perena+Sao+Paulo"
+               target="_blank" rel="noopener noreferrer">
+                Ver rota
+            </a>
+        `)
+    },
+    {
+        coords: [-23.5480, -46.4530],
+        marker: L.marker([-23.5480, -46.4530]).bindPopup(`
+            <b>Ecoponto Vila Carmosina</b><br>
+            Avenida Francisco Tranchesi, altura do nº 71<br>
+            <b>Tipo:</b> Ecoponto municipal<br>
+            <a href="https://www.google.com/maps/search/?api=1&query=Ecoponto+Vila+Carmosina+Sao+Paulo"
+               target="_blank" rel="noopener noreferrer">
+                Ver rota
+            </a>
+        `)
+    },
+    {
+        coords: [-23.5260, -46.4900],
+        marker: L.marker([-23.5260, -46.4900]).bindPopup(`
+            <b>Ecoponto Vila Santa Teresinha</b><br>
+            Rua Major Vitorino de Souza Rocha, 90<br>
+            <b>Tipo:</b> Ecoponto municipal<br>
+            <a href="https://www.google.com/maps/search/?api=1&query=Ecoponto+Vila+Santa+Teresinha+Sao+Paulo"
+               target="_blank" rel="noopener noreferrer">
+                Ver rota
+            </a>
+        `)
+    },
+    {
+        coords: [-23.5370, -46.5240],
+        marker: L.marker([-23.5370, -46.5240]).bindPopup(`
+            <b>Ecoponto Vila Matilde</b><br>
+            Rua Mateus de Siqueira, 375<br>
+            Jardim Triana, São Paulo - SP<br>
+            <b>Tipo:</b> Ecoponto municipal<br>
+            <a href="https://www.google.com/maps/search/?api=1&query=Ecoponto+Vila+Matilde+Rua+Mateus+de+Siqueira+375"
+               target="_blank" rel="noopener noreferrer">
+                Ver rota
+            </a>
+        `)
+    },
+    {
+        coords: [-23.5100, -46.5250],
+        marker: L.marker([-23.5100, -46.5250]).bindPopup(`
+            <b>Ecoponto Tiquatira</b><br>
+            Avenida Governador Carvalho Pinto<br>
+            Jardim Jaú, São Paulo - SP<br>
+            <b>Tipo:</b> Ecoponto municipal<br>
+            <a href="https://www.google.com/maps/search/?api=1&query=Ecoponto+Tiquatira+Sao+Paulo"
+               target="_blank" rel="noopener noreferrer">
+                Ver rota
+            </a>
+        `)
+    }
+];
 
-L.marker(cohab)
-    .addTo(map)
-    .bindPopup(`
-        <b>Ecoponto COHAB Artur Alvim</b><br>
-        Avenida Padre Estanislau de Campos, 56<br>
-        <b>Tipo:</b> Ecoponto municipal<br>
-        <a href="https://www.google.com/maps/search/?api=1&query=Ecoponto+COHAB+Artur+Alvim+Sao+Paulo"
-           target="_blank" rel="noopener noreferrer">
-            Ver rota
-        </a>
-    `);
+window.pontosMapa = pontosMapa;
 
-// Ecoponto Franquinho
-const franquinho = [-23.5400, -46.4730];
+pontosMapa.forEach(ponto => {
+    map.addLayer(ponto.marker);
+});
 
-L.marker(franquinho)
-    .addTo(map)
-    .bindPopup(`
-        <b>Ecoponto Franquinho</b><br>
-        Rua Praia de Mucuripe, 685<br>
-        Jardim Artur Alvim<br>
-        <b>Tipo:</b> Ecoponto municipal<br>
-        <a href="https://www.google.com/maps/search/?api=1&query=Ecoponto+Franquinho+Sao+Paulo"
-           target="_blank" rel="noopener noreferrer">
-            Ver rota
-        </a>
-    `);
-
-// Ecoponto Jardim São Nicolau
-const jardimSaoNicolau = [-23.5355, -46.4830];
-
-L.marker(jardimSaoNicolau)
-    .addTo(map)
-    .bindPopup(`
-        <b>Ecoponto Jardim São Nicolau</b><br>
-        Rua Agreste de Itabaiana, 590<br>
-        Jardim Artur Alvim, São Paulo - SP<br>
-        <b>Tipo:</b> Ponto de descarte<br>
-        <a href="https://www.google.com/maps/search/?api=1&query=Rua+Agreste+de+Itabaiana+590+Sao+Paulo"
-           target="_blank" rel="noopener noreferrer">
-            Ver localização
-        </a>
-    `);
-
+configurarFiltros();
+aplicarFiltroPontos();
 
 map.on("click", function (e) {
     L.popup()
