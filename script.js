@@ -116,6 +116,34 @@ function pontoProximoDaArea(latlng, distanciaMaximaKm = 2.1) {
     return distanciaKm <= distanciaMaximaKm;
 }
 
+function estimativaColetaNaArea(latlng) {
+    if (!limitesArturAlvim.length) {
+        return "";
+    }
+
+    const limitesGeograficos = L.latLngBounds([]);
+    limitesArturAlvim.forEach(poligono => {
+        limitesGeograficos.extend(poligono.getBounds());
+    });
+
+    const faixaLatitude = (limitesGeograficos.getNorth() - limitesGeograficos.getSouth()) / 3;
+    const estimativas = [
+        { regiao: "Sul", dias: "quarta e sábado", horario: "das 13h às 16h" },
+        { regiao: "Centro", dias: "terça e sexta", horario: "das 10h às 13h" },
+        { regiao: "Norte", dias: "segunda e quinta", horario: "das 7h às 10h" }
+    ];
+    const posicaoFaixa = Math.min(
+        2,
+        Math.floor((latlng.lat - limitesGeograficos.getSouth()) / faixaLatitude)
+    );
+    const estimativa = estimativas[posicaoFaixa];
+
+    return `<b>Região ${estimativa.regiao} — coleta seletiva</b><br>` +
+        `<b>Dias estimados:</b> ${estimativa.dias}<br>` +
+        `<b>Horário estimado:</b> ${estimativa.horario}<br>` +
+        `<small>Previsão aproximada; confirme os dias e horários da sua rua.</small>`;
+}
+
 function aplicarFiltroPontos() {
     const pontos = window.pontosMapa || [];
 
@@ -265,11 +293,7 @@ async function carregarLimiteArturAlvim() {
                 fillColor: "#ff6500",
                 fillOpacity: 0.08,
                 lineJoin: "round"
-            })
-                .bindPopup(
-                    "<b>Artur Alvim</b><br>Delimitação administrativa"
-                )
-                .addTo(camadaLimite);
+            }).addTo(camadaLimite);
 
             limitesArturAlvim.push(poligono);
         });
@@ -547,6 +571,21 @@ configurarFiltros();
 aplicarFiltroPontos();
 
 map.on("click", function (e) {
+    const dentroDeArturAlvim = limitesArturAlvim.some(poligono =>
+        pontoDentroDoPoligono(e.latlng, poligono.getLatLngs()[0])
+    );
+
+    if (dentroDeArturAlvim) {
+        L.popup()
+            .setLatLng(e.latlng)
+            .setContent(
+                `<b>Artur Alvim</b><br>Delimitação administrativa<hr>` +
+                estimativaColetaNaArea(e.latlng)
+            )
+            .openOn(map);
+        return;
+    }
+
     L.popup()
         .setLatLng(e.latlng)
         .setContent(`
