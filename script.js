@@ -1,5 +1,5 @@
 ﻿const centro = [-23.54024, -46.48471];
-const filtroAtual = { valor: "todos" };
+const filtroAtual = { area: "todos", categoria: "todos" };
 const mobile = window.matchMedia("(max-width: 640px)").matches;
 
 const limites = mobile
@@ -18,6 +18,38 @@ const map = L.map("map", {
     maxBounds: limites,
     maxBoundsViscosity: mobile ? 0.7 : 1
 }).setView(centro, 15);
+
+const iconeMarcadorVerde = L.divIcon({
+    className: "ecoponto-marker",
+    html: `<svg width="32" height="42" viewBox="0 0 32 42" aria-hidden="true">
+        <path fill="#198754" stroke="#fff" stroke-width="2"
+            d="M16 1C7.7 1 1 7.7 1 16c0 11 15 25 15 25s15-14 15-25C31 7.7 24.3 1 16 1z"/>
+        <circle cx="16" cy="16" r="5" fill="#fff"/>
+    </svg>`,
+    iconSize: [32, 42],
+    iconAnchor: [16, 42],
+    popupAnchor: [0, -40]
+});
+
+const iconeMarcadorAmarelo = L.divIcon({
+    className: "ponto-especifico-marker",
+    html: `<svg width="32" height="42" viewBox="0 0 32 42" aria-hidden="true">
+        <path fill="#f2b705" stroke="#fff" stroke-width="2"
+            d="M16 1C7.7 1 1 7.7 1 16c0 11 15 25 15 25s15-14 15-25C31 7.7 24.3 1 16 1z"/>
+        <circle cx="16" cy="16" r="5" fill="#fff"/>
+    </svg>`,
+    iconSize: [32, 42],
+    iconAnchor: [16, 42],
+    popupAnchor: [0, -40]
+});
+
+function criarMarcadorVerde(coordenadas) {
+    return L.marker(coordenadas, { icon: iconeMarcadorVerde });
+}
+
+function criarMarcadorAmarelo(coordenadas) {
+    return L.marker(coordenadas, { icon: iconeMarcadorAmarelo });
+}
 
 window.addEventListener("resize", () => {
     map.invalidateSize();
@@ -88,16 +120,17 @@ function aplicarFiltroPontos() {
     const pontos = window.pontosMapa || [];
 
     pontos.forEach(ponto => {
-        let visivel = true;
+        let visivel = filtroAtual.categoria === "todos" ||
+            ponto.categoria === filtroAtual.categoria;
 
-        if (filtroAtual.valor === "artur-alvim") {
+        if (visivel && filtroAtual.area === "artur-alvim") {
             visivel = limitesArturAlvim.some(poligono => {
                 const coordenadas = poligono.getLatLngs()[0];
                 return pontoDentroDoPoligono(ponto.coords, coordenadas);
             });
         }
 
-        if (filtroAtual.valor === "proximos") {
+        if (visivel && filtroAtual.area === "proximos") {
             const dentroDaArea = limitesArturAlvim.some(poligono => {
                 const coordenadas = poligono.getLatLngs()[0];
                 return pontoDentroDoPoligono(ponto.coords, coordenadas);
@@ -118,11 +151,12 @@ function aplicarFiltroPontos() {
 function configurarFiltros() {
     document.querySelectorAll(".filter-btn").forEach(botao => {
         botao.addEventListener("click", () => {
-            document.querySelectorAll(".filter-btn").forEach(item => {
+            const grupo = botao.dataset.filterGroup;
+            document.querySelectorAll(`.filter-btn[data-filter-group="${grupo}"]`).forEach(item => {
                 item.classList.toggle("active", item === botao);
             });
 
-            filtroAtual.valor = botao.dataset.filter;
+            filtroAtual[grupo] = botao.dataset.filter;
             aplicarFiltroPontos();
         });
     });
@@ -133,10 +167,6 @@ async function carregarLimiteArturAlvim() {
 
     try {
         const resposta = await fetch(url);
-
-        if (!resposta.ok) {
-            throw new Error(`Erro HTTP ${resposta.status}`);
-        }
 
         const textoXML = await resposta.text();
 
@@ -256,7 +286,8 @@ carregarLimiteArturAlvim();
 const pontosMapa = [
     {
         coords: [-23.5408, -46.4790],
-        marker: L.marker([-23.5408, -46.4790]).bindPopup(`
+        categoria: "ecoponto",
+        marker: criarMarcadorVerde([-23.5408, -46.4790]).bindPopup(`
             <b>Ecoponto COHAB Artur Alvim</b><br>
             Avenida Padre Estanislau de Campos, 56<br>
             <b>Tipo:</b> Ecoponto municipal<br>
@@ -268,7 +299,8 @@ const pontosMapa = [
     },
     {
         coords: [-23.5400, -46.4730],
-        marker: L.marker([-23.5400, -46.4730]).bindPopup(`
+        categoria: "ecoponto",
+        marker: criarMarcadorVerde([-23.5400, -46.4730]).bindPopup(`
             <b>Ecoponto Franquinho</b><br>
             Rua Praia de Mucuripe, 685<br>
             Jardim Artur Alvim<br>
@@ -281,7 +313,8 @@ const pontosMapa = [
     },
     {
         coords: [-23.5355, -46.4830],
-        marker: L.marker([-23.5355, -46.4830]).bindPopup(`
+        categoria: "ecoponto",
+        marker: criarMarcadorVerde([-23.5355, -46.4830]).bindPopup(`
             <b>Ecoponto Jardim São Nicolau</b><br>
             Rua Agreste de Itabaiana, 590<br>
             Jardim Artur Alvim, São Paulo - SP<br>
@@ -294,7 +327,8 @@ const pontosMapa = [
     },
     {
         coords: [-23.5630, -46.4900],
-        marker: L.marker([-23.5630, -46.4900]).bindPopup(`
+        categoria: "ecoponto",
+        marker: criarMarcadorVerde([-23.5630, -46.4900]).bindPopup(`
             <b>Ecoponto Cidade Líder</b><br>
             Rua Charles Manguin, esquina com Rua Francesco Melzi<br>
             <b>Tipo:</b> Ecoponto municipal<br>
@@ -306,7 +340,8 @@ const pontosMapa = [
     },
     {
         coords: [-23.5460, -46.4380],
-        marker: L.marker([-23.5460, -46.4380]).bindPopup(`
+        categoria: "ecoponto",
+        marker: criarMarcadorVerde([-23.5460, -46.4380]).bindPopup(`
             <b>Ecoponto José Bonifácio</b><br>
             Rua Ana Perena, altura do nº 110<br>
             <b>Tipo:</b> Ecoponto municipal<br>
@@ -318,7 +353,8 @@ const pontosMapa = [
     },
     {
         coords: [-23.5480, -46.4530],
-        marker: L.marker([-23.5480, -46.4530]).bindPopup(`
+        categoria: "ecoponto",
+        marker: criarMarcadorVerde([-23.5480, -46.4530]).bindPopup(`
             <b>Ecoponto Vila Carmosina</b><br>
             Avenida Francisco Tranchesi, altura do nº 71<br>
             <b>Tipo:</b> Ecoponto municipal<br>
@@ -330,7 +366,8 @@ const pontosMapa = [
     },
     {
         coords: [-23.5260, -46.4900],
-        marker: L.marker([-23.5260, -46.4900]).bindPopup(`
+        categoria: "ecoponto",
+        marker: criarMarcadorVerde([-23.5260, -46.4900]).bindPopup(`
             <b>Ecoponto Vila Santa Teresinha</b><br>
             Rua Major Vitorino de Souza Rocha, 90<br>
             <b>Tipo:</b> Ecoponto municipal<br>
@@ -342,7 +379,8 @@ const pontosMapa = [
     },
     {
         coords: [-23.5370, -46.5240],
-        marker: L.marker([-23.5370, -46.5240]).bindPopup(`
+        categoria: "ecoponto",
+        marker: criarMarcadorVerde([-23.5370, -46.5240]).bindPopup(`
             <b>Ecoponto Vila Matilde</b><br>
             Rua Mateus de Siqueira, 375<br>
             Jardim Triana, São Paulo - SP<br>
@@ -355,7 +393,8 @@ const pontosMapa = [
     },
     {
         coords: [-23.5100, -46.5250],
-        marker: L.marker([-23.5100, -46.5250]).bindPopup(`
+        categoria: "ecoponto",
+        marker: criarMarcadorVerde([-23.5100, -46.5250]).bindPopup(`
             <b>Ecoponto Tiquatira</b><br>
             Avenida Governador Carvalho Pinto<br>
             Jardim Jaú, São Paulo - SP<br>
@@ -367,6 +406,113 @@ const pontosMapa = [
         `)
     }
 ];
+
+// PEV - CE José Bonifácio
+const pevCeJoseBonifacio = L.marker([-23.5460, -46.4380])
+    .addTo(map)
+    .bindPopup(`
+        <b>PEV - CE José Bonifácio</b><br>
+        Rua Ana Perena, 110<br>
+        <b>Tipo:</b> Recicláveis<br>
+        <b>Materiais aceitos:</b> Plástico, papel, papelão, vidro e metal<br>
+        <a href="https://www.google.com/maps/search/?api=1&query=Rua+Ana+Perena+110+Sao+Paulo"
+           target="_blank" rel="noopener noreferrer">
+            Ver localização
+        </a>
+    `);
+
+// PEV - CDC Líder
+const pevCdcLider = L.marker([-23.5580, -46.4850])
+    .addTo(map)
+    .bindPopup(`
+        <b>PEV - CDC Líder</b><br>
+        Rua Casemiro Nisskiniz, 157<br>
+        <b>Tipo:</b> Ponto de entrega voluntária<br>
+        <b>Materiais aceitos:</b> Plástico, papel, papelão, vidro e metal<br>
+        <a href="https://www.google.com/maps/search/?api=1&query=Rua+Casemiro+Nisskiniz+157+Sao+Paulo"
+           target="_blank" rel="noopener noreferrer">
+            Ver localização
+        </a>
+    `);
+
+// PEV - CDC Araújo
+const pevCdcAraujo = L.marker([-23.5520, -46.4780])
+    .addTo(map)
+    .bindPopup(`
+        <b>PEV - CDC Araújo</b><br>
+        Rua Bernardino Prudenti, 194<br>
+        <b>Tipo:</b> Ponto de entrega voluntária<br>
+        <b>Materiais aceitos:</b> Plástico, papel, papelão, vidro e metal<br>
+        <a href="https://www.google.com/maps/search/?api=1&query=Rua+Bernardino+Prudenti+194+Sao+Paulo"
+           target="_blank" rel="noopener noreferrer">
+            Ver localização
+        </a>
+    `);
+
+// PEV - CDC União do Morro de Santa Tereza
+const pevUniaoMorro = L.marker([-23.5500, -46.4800])
+    .addTo(map)
+    .bindPopup(`
+        <b>PEV - CDC União do Morro de Santa Tereza</b><br>
+        Rua Astolfo Marques, 330<br>
+        <b>Tipo:</b> Ponto de entrega voluntária<br>
+        <b>Materiais aceitos:</b> Plástico, papel, papelão, vidro e metal<br>
+        <a href="https://www.google.com/maps/search/?api=1&query=Rua+Astolfo+Marques+330+Sao+Paulo"
+           target="_blank" rel="noopener noreferrer">
+            Ver localização
+        </a>
+    `);
+
+// 1. Assaí Itaquera — óleo, pilhas, baterias e lâmpadas
+const assaiItaquera = criarMarcadorAmarelo([-23.5410, -46.4580])
+    .addTo(map)
+    .bindPopup(`
+        <b>Assaí Itaquera</b><br>
+        Avenida Sylvio Torres, 190<br>
+        Conjunto Habitacional Padre José de Anchieta<br>
+        <hr>
+        <b>Materiais coletados:</b><br>
+        • Óleo de cozinha usado<br>
+        • Pilhas e baterias<br>
+        • Lâmpadas<br>
+        <hr>
+        <a href="https://www.google.com/maps/search/?api=1&query=Assai+Itaquera+Avenida+Sylvio+Torres+190"
+           target="_blank" rel="noopener noreferrer">
+            Ver rota
+        </a>
+    `);
+
+
+// Subprefeitura de Itaquera — ponto divulgado em registro antigo
+const subprefeituraItaquera = criarMarcadorAmarelo([-23.5408, -46.4615])
+    .addTo(map)
+    .bindPopup(`
+        <b>Subprefeitura de Itaquera</b><br>
+        Rua Augusto Carlos Baumann, 851<br>
+        <hr>
+        <b>Materiais divulgados:</b><br>
+        • Papel e papelão<br>
+        • Plásticos<br>
+        • Metais e vidro<br>
+        • Óleo de cozinha usado<br>
+        • Pilhas e baterias<br>
+        <hr>
+        <a href="https://www.google.com/maps/search/?api=1&query=Rua+Augusto+Carlos+Baumann+851+Itaquera"
+           target="_blank" rel="noopener noreferrer">
+            Ver rota
+        </a>
+    `);
+
+
+
+pontosMapa.push(
+    { coords: [-23.5460, -46.4380], categoria: "pev", marker: pevCeJoseBonifacio },
+    { coords: [-23.5580, -46.4850], categoria: "pev", marker: pevCdcLider },
+    { coords: [-23.5520, -46.4780], categoria: "pev", marker: pevCdcAraujo },
+    { coords: [-23.5500, -46.4800], categoria: "pev", marker: pevUniaoMorro },
+    { coords: [-23.5410, -46.4580], categoria: "especifico", marker: assaiItaquera },
+    { coords: [-23.5408, -46.4615], categoria: "especifico", marker: subprefeituraItaquera }
+);
 
 window.pontosMapa = pontosMapa;
 

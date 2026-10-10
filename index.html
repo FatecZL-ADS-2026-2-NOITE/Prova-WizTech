@@ -26,10 +26,26 @@
 
     <section id="map-section">
         <div class="map-controls" aria-label="Filtros de pontos no mapa">
-            <button class="filter-btn active" type="button" data-filter="todos">Todos</button>
-            <button class="filter-btn" type="button" data-filter="artur-alvim">Só em Artur Alvim</button>
-            <button class="filter-btn" type="button" data-filter="proximos">Próximos</button>
+            <div class="filter-group area-filters" role="group" aria-label="Filtrar por região">
+                <span class="filter-label">Região</span>
+                <button class="filter-btn active" type="button" data-filter-group="area" data-filter="todos">Todas</button>
+                <button class="filter-btn" type="button" data-filter-group="area" data-filter="artur-alvim">Artur Alvim</button>
+                <button class="filter-btn" type="button" data-filter-group="area" data-filter="proximos">Próximos</button>
+            </div>
+            <div class="filter-group category-filters" role="group" aria-label="Filtrar por tipo de ponto">
+                <span class="filter-label">Tipo de ponto</span>
+                <button class="filter-btn active" type="button" data-filter-group="categoria" data-filter="todos">Todos</button>
+                <button class="filter-btn" type="button" data-filter-group="categoria" data-filter="ecoponto">Ecopontos</button>
+                <button class="filter-btn" type="button" data-filter-group="categoria" data-filter="pev">PEVs</button>
+                <button class="filter-btn" type="button" data-filter-group="categoria" data-filter="especifico">Coleta específica</button>
+            </div>
         </div>
+        <aside class="map-legend" aria-label="Legenda das cores dos marcadores">
+            <span class="legend-title">Legenda</span>
+            <span class="legend-item"><span class="legend-swatch legend-ecoponto"></span>Ecopontos</span>
+            <span class="legend-item"><span class="legend-swatch legend-pev"></span>PEVs</span>
+            <span class="legend-item"><span class="legend-swatch legend-especifico"></span>Coleta específica</span>
+        </aside>
         <div id="map"></div>
     </section>
 
