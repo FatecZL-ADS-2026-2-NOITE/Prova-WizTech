@@ -1,23 +1,20 @@
 const L = window.L;
-const centro = [-23.54024, -46.48471];
+const dados = window.DADOS_MAPA;
 const filtros = { area: "todos", categoria: "todos" };
 const mobile = window.matchMedia("(max-width: 640px)").matches;
-const limitesMapa = mobile
-    ? L.latLngBounds([-23.590, -46.560], [-23.500, -46.420])
-    : L.latLngBounds([-23.565, -46.515], [-23.515, -46.455]);
-
+const limites = mobile ? dados.limites.mobile : dados.limites.desktop;
 const mapa = L.map("map", {
-    minZoom: 14,
-    maxZoom: 20,
-    maxBounds: limitesMapa,
+    minZoom: dados.zoomMinimo,
+    maxZoom: dados.zoomMaximo,
+    maxBounds: L.latLngBounds(limites[0], limites[1]),
     maxBoundsViscosity: mobile ? 0.7 : 1
-}).setView(centro, 15);
+}).setView(dados.centro, dados.zoomInicial);
 
-L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-    attribution: "&copy; OpenStreetMap contributors",
-    minZoom: 14,
-    maxZoom: 20,
-    maxNativeZoom: 19
+L.tileLayer(dados.tiles.url, {
+    attribution: dados.tiles.atribuicao,
+    minZoom: dados.zoomMinimo,
+    maxZoom: dados.tiles.zoomMaximo,
+    maxNativeZoom: dados.tiles.zoomNativoMaximo
 }).addTo(mapa);
 
 window.addEventListener("resize", () => mapa.invalidateSize());
@@ -39,25 +36,44 @@ function criarIconeMarcador(cor, classe) {
     });
 }
 
-const iconeVerde = criarIconeMarcador("#198754", "ecoponto-marker");
-const iconeAmarelo = criarIconeMarcador("#f2b705", "ponto-especifico-marker");
+const iconesMarcador = {
+    ecoponto: criarIconeMarcador("#198754", "ecoponto-marker"),
+    especifico: criarIconeMarcador("#f2b705", "ponto-especifico-marker")
+};
 
-function criarEcoponto(coords, popup) {
+function criarConteudoPopup(ponto) {
+    const tipo = ponto.tipo ? `<br><b>Tipo:</b> ${ponto.tipo}` : "";
+    const materiais = ponto.materiais
+        ? `<br><b>Materiais aceitos:</b> ${ponto.materiais}`
+        : "";
+    const listaMateriais = ponto.materiaisLista
+        ? `<hr><b>${ponto.materiaisLabel}:</b><br>• ${ponto.materiaisLista.join("<br>• ")}`
+        : "";
+    const rota = ponto.rota
+        ? `<br><a href="${ponto.rota}" target="_blank" rel="noopener noreferrer">` +
+          `${ponto.textoRota || "Ver rota"}</a>`
+        : "";
+
+    return `<b>${ponto.nome}</b><br>${ponto.endereco}${tipo}${materiais}${listaMateriais}${rota}` +
+        `<br><b>Funcionamento:</b> ${ponto.horario}.`;
+}
+
+function criarPonto(ponto) {
+    const opcoes = iconesMarcador[ponto.categoria]
+        ? { icon: iconesMarcador[ponto.categoria] }
+        : {};
+    const marker = L.marker(ponto.coordenadas, opcoes)
+        .bindPopup(criarConteudoPopup(ponto));
+
     return {
-        coords,
-        categoria: "ecoponto",
-        marker: L.marker(coords, { icon: iconeVerde }).bindPopup(popup)
+        coords: ponto.coordenadas,
+        categoria: ponto.categoria,
+        marker
     };
 }
 
-function criarPontoEspecifico(coords, popup) {
-    return L.marker(coords, { icon: iconeAmarelo }).bindPopup(popup);
-}
-
-function adicionarHorario(marcador, horario) {
-    const popup = marcador.getPopup();
-    popup.setContent(`${popup.getContent()}<br><b>Funcionamento:</b> ${horario}.`);
-}
+const pontosMapa = dados.pontos.map(criarPonto);
+window.pontosMapa = pontosMapa;
 
 function normalizarLatLng(latlng) {
     if (Array.isArray(latlng)) {
@@ -147,8 +163,7 @@ function conectarCaminhos(caminhos) {
 }
 
 async function carregarLimiteArturAlvim() {
-    const url = "https://www.openstreetmap.org/api/0.6/relation/3049500/full";
-    const resposta = await fetch(url);
+    const resposta = await fetch(dados.limiteArturAlvim.url);
 
     const documento = new DOMParser().parseFromString(
         await resposta.text(),
@@ -172,7 +187,7 @@ async function carregarLimiteArturAlvim() {
     });
 
     const caminhos = Array.from(documento.querySelectorAll(
-        'relation[id="3049500"] > member[type="way"][role="outer"]'
+        `relation[id="${dados.limiteArturAlvim.relationId}"] > member[type="way"][role="outer"]`
     ))
         .map(membro => vias.get(membro.getAttribute("ref")))
         .filter(caminho => caminho && caminho.length >= 2)
@@ -210,17 +225,12 @@ function obterEstimativaColeta(coordenadas) {
     limitesArturAlvim.forEach(poligono => limitesGeograficos.extend(poligono.getBounds()));
 
     const faixaLatitude =
-        (limitesGeograficos.getNorth() - limitesGeograficos.getSouth()) / 3;
+        (limitesGeograficos.getNorth() - limitesGeograficos.getSouth()) / dados.coletaEstimada.length;
     const posicao = Math.max(0, Math.min(
-        2,
+        dados.coletaEstimada.length - 1,
         Math.floor((coordenadas.lat - limitesGeograficos.getSouth()) / faixaLatitude)
     ));
-    const estimativas = [
-        { regiao: "Sul", dias: "quarta e sábado", horario: "das 13h às 16h" },
-        { regiao: "Centro", dias: "terça e sexta", horario: "das 10h às 13h" },
-        { regiao: "Norte", dias: "segunda e quinta", horario: "das 7h às 10h" }
-    ];
-    const estimativa = estimativas[posicao];
+    const estimativa = dados.coletaEstimada[posicao];
 
     return `<b>Região ${estimativa.regiao} — coleta seletiva</b><br>` +
         `<b>Dias estimados:</b> ${estimativa.dias}<br>` +
@@ -228,191 +238,10 @@ function obterEstimativaColeta(coordenadas) {
         `<small>Previsão aproximada; confirme os dias e horários da sua rua.</small>`;
 }
 
-const pontos = [
-    criarEcoponto([-23.5408, -46.4790], `
-        <b>Ecoponto COHAB Artur Alvim</b><br>
-        Avenida Padre Estanislau de Campos, 56<br>
-        <b>Tipo:</b> Ecoponto municipal<br>
-        <a href="https://www.google.com/maps/search/?api=1&query=Ecoponto+COHAB+Artur+Alvim+Sao+Paulo"
-           target="_blank" rel="noopener noreferrer">Ver rota</a>
-    `),
-    criarEcoponto([-23.5400, -46.4730], `
-        <b>Ecoponto Franquinho</b><br>
-        Rua Praia de Mucuripe, 685<br>
-        Jardim Artur Alvim<br>
-        <b>Tipo:</b> Ecoponto municipal<br>
-        <a href="https://www.google.com/maps/search/?api=1&query=Ecoponto+Franquinho+Sao+Paulo"
-           target="_blank" rel="noopener noreferrer">Ver rota</a>
-    `),
-    criarEcoponto([-23.5355, -46.4830], `
-        <b>Ecoponto Jardim São Nicolau</b><br>
-        Rua Agreste de Itabaiana, 590<br>
-        Jardim Artur Alvim, São Paulo - SP<br>
-        <b>Tipo:</b> Ponto de descarte<br>
-        <a href="https://www.google.com/maps/search/?api=1&query=Rua+Agreste+de+Itabaiana+590+Sao+Paulo"
-           target="_blank" rel="noopener noreferrer">Ver localização</a>
-    `),
-    criarEcoponto([-23.5630, -46.4900], `
-        <b>Ecoponto Cidade Líder</b><br>
-        Rua Charles Manguin, esquina com Rua Francesco Melzi<br>
-        <b>Tipo:</b> Ecoponto municipal<br>
-        <a href="https://www.google.com/maps/search/?api=1&query=Ecoponto+Cidade+Lider+Sao+Paulo"
-           target="_blank" rel="noopener noreferrer">Ver rota</a>
-    `),
-    criarEcoponto([-23.5460, -46.4380], `
-        <b>Ecoponto José Bonifácio</b><br>
-        Rua Ana Perena, altura do nº 110<br>
-        <b>Tipo:</b> Ecoponto municipal<br>
-        <a href="https://www.google.com/maps/search/?api=1&query=Ecoponto+Jose+Bonifacio+Rua+Ana+Perena+Sao+Paulo"
-           target="_blank" rel="noopener noreferrer">Ver rota</a>
-    `),
-    criarEcoponto([-23.5480, -46.4530], `
-        <b>Ecoponto Vila Carmosina</b><br>
-        Avenida Francisco Tranchesi, altura do nº 71<br>
-        <b>Tipo:</b> Ecoponto municipal<br>
-        <a href="https://www.google.com/maps/search/?api=1&query=Ecoponto+Vila+Carmosina+Sao+Paulo"
-           target="_blank" rel="noopener noreferrer">Ver rota</a>
-    `),
-    criarEcoponto([-23.5260, -46.4900], `
-        <b>Ecoponto Vila Santa Teresinha</b><br>
-        Rua Major Vitorino de Souza Rocha, 90<br>
-        <b>Tipo:</b> Ecoponto municipal<br>
-        <a href="https://www.google.com/maps/search/?api=1&query=Ecoponto+Vila+Santa+Teresinha+Sao+Paulo"
-           target="_blank" rel="noopener noreferrer">Ver rota</a>
-    `),
-    criarEcoponto([-23.5370, -46.5240], `
-        <b>Ecoponto Vila Matilde</b><br>
-        Rua Mateus de Siqueira, 375<br>
-        Jardim Triana, São Paulo - SP<br>
-        <b>Tipo:</b> Ecoponto municipal<br>
-        <a href="https://www.google.com/maps/search/?api=1&query=Ecoponto+Vila+Matilde+Rua+Mateus+de+Siqueira+375"
-           target="_blank" rel="noopener noreferrer">Ver rota</a>
-    `),
-    criarEcoponto([-23.5100, -46.5250], `
-        <b>Ecoponto Tiquatira</b><br>
-        Avenida Governador Carvalho Pinto<br>
-        Jardim Jaú, São Paulo - SP<br>
-        <b>Tipo:</b> Ecoponto municipal<br>
-        <a href="https://www.google.com/maps/search/?api=1&query=Ecoponto+Tiquatira+Sao+Paulo"
-           target="_blank" rel="noopener noreferrer">Ver rota</a>
-    `)
-];
-
-const pevs = [
-    {
-        coords: [-23.5460, -46.4380],
-        horario: "Segunda a sábado, das 8h às 17h",
-        popup: `
-            <b>PEV - CE José Bonifácio</b><br>
-            Rua Ana Perena, 110<br>
-            <b>Tipo:</b> Recicláveis<br>
-            <b>Materiais aceitos:</b> Plástico, papel, papelão, vidro e metal<br>
-            <a href="https://www.google.com/maps/search/?api=1&query=Rua+Ana+Perena+110+Sao+Paulo"
-               target="_blank" rel="noopener noreferrer">Ver localização</a>
-        `
-    },
-    {
-        coords: [-23.5580, -46.4850],
-        horario: "Segunda a sexta, das 8h às 17h",
-        popup: `
-            <b>PEV - CDC Líder</b><br>
-            Rua Casemiro Nisskiniz, 157<br>
-            <b>Tipo:</b> Ponto de entrega voluntária<br>
-            <b>Materiais aceitos:</b> Plástico, papel, papelão, vidro e metal<br>
-            <a href="https://www.google.com/maps/search/?api=1&query=Rua+Casemiro+Nisskiniz+157+Sao+Paulo"
-               target="_blank" rel="noopener noreferrer">Ver localização</a>
-        `
-    },
-    {
-        coords: [-23.5520, -46.4780],
-        horario: "Segunda a sábado, das 8h às 17h",
-        popup: `
-            <b>PEV - CDC Araújo</b><br>
-            Rua Bernardino Prudenti, 194<br>
-            <b>Tipo:</b> Ponto de entrega voluntária<br>
-            <b>Materiais aceitos:</b> Plástico, papel, papelão, vidro e metal<br>
-            <a href="https://www.google.com/maps/search/?api=1&query=Rua+Bernardino+Prudenti+194+Sao+Paulo"
-               target="_blank" rel="noopener noreferrer">Ver localização</a>
-        `
-    },
-    {
-        coords: [-23.5500, -46.4800],
-        horario: "Segunda a sexta, das 8h às 17h",
-        popup: `
-            <b>PEV - CDC União do Morro de Santa Tereza</b><br>
-            Rua Astolfo Marques, 330<br>
-            <b>Tipo:</b> Ponto de entrega voluntária<br>
-            <b>Materiais aceitos:</b> Plástico, papel, papelão, vidro e metal<br>
-            <a href="https://www.google.com/maps/search/?api=1&query=Rua+Astolfo+Marques+330+Sao+Paulo"
-               target="_blank" rel="noopener noreferrer">Ver localização</a>
-        `
-    }
-].map(pev => {
-    const marker = L.marker(pev.coords).bindPopup(pev.popup);
-    adicionarHorario(marker, pev.horario);
-    return { coords: pev.coords, categoria: "pev", marker };
-});
-
-const pontosEspecificos = [
-    {
-        coords: [-23.5410, -46.4580],
-        horario: "Segunda a sábado, das 7h às 22h",
-        popup: `
-            <b>Assaí Itaquera</b><br>
-            Avenida Sylvio Torres, 190<br>
-            Conjunto Habitacional Padre José de Anchieta<br>
-            <hr>
-            <b>Materiais coletados:</b><br>
-            • Óleo de cozinha usado<br>
-            • Pilhas e baterias<br>
-            • Lâmpadas<br>
-            <hr>
-            <a href="https://www.google.com/maps/search/?api=1&query=Assai+Itaquera+Avenida+Sylvio+Torres+190"
-               target="_blank" rel="noopener noreferrer">Ver rota</a>
-        `
-    },
-    {
-        coords: [-23.5408, -46.4615],
-        horario: "Segunda a sexta, das 8h às 17h",
-        popup: `
-            <b>Subprefeitura de Itaquera</b><br>
-            Rua Augusto Carlos Baumann, 851<br>
-            <hr>
-            <b>Materiais divulgados:</b><br>
-            • Papel e papelão<br>
-            • Plásticos<br>
-            • Metais e vidro<br>
-            • Óleo de cozinha usado<br>
-            • Pilhas e baterias<br>
-            <hr>
-            <a href="https://www.google.com/maps/search/?api=1&query=Rua+Augusto+Carlos+Baumann+851+Itaquera"
-               target="_blank" rel="noopener noreferrer">Ver rota</a>
-        `
-    }
-].map(ponto => {
-    const marker = criarPontoEspecifico(ponto.coords, ponto.popup);
-    adicionarHorario(marker, ponto.horario);
-    return { coords: ponto.coords, categoria: "especifico", marker };
-});
-
-const horariosEcopontos = [
-    "Segunda a sábado, das 8h às 17h",
-    "Segunda a sexta, das 8h às 17h",
-    "Segunda a sábado, das 8h às 18h",
-    "Segunda a sexta, das 8h às 17h",
-    "Segunda a sábado, das 8h às 17h",
-    "Segunda a sexta, das 8h às 17h",
-    "Segunda a sábado, das 8h às 18h",
-    "Segunda a sexta, das 8h às 17h",
-    "Segunda a sábado, das 8h às 18h"
-];
-pontos.forEach((ponto, indice) => adicionarHorario(ponto.marker, horariosEcopontos[indice]));
-
-const pontosMapa = [...pontos, ...pevs, ...pontosEspecificos];
-
 function pontoEstaVisivel(ponto) {
     const correspondeCategoria = filtros.categoria === "todos" ||
         ponto.categoria === filtros.categoria;
+
     if (!correspondeCategoria) {
         return false;
     }
@@ -422,8 +251,9 @@ function pontoEstaVisivel(ponto) {
     }
 
     if (filtros.area === "proximos") {
-        const distanciaKm = L.latLng(ponto.coords).distanceTo(L.latLng(centro)) / 1000;
-        return estaDentroDeArturAlvim(ponto.coords) || distanciaKm <= 2.1;
+        const distanciaKm = L.latLng(ponto.coords).distanceTo(L.latLng(dados.centro)) / 1000;
+        return estaDentroDeArturAlvim(ponto.coords) ||
+            distanciaKm <= dados.distanciaProximosKm;
     }
 
     return true;
@@ -456,7 +286,6 @@ function configurarFiltros() {
 pontosMapa.forEach(ponto => mapa.addLayer(ponto.marker));
 configurarFiltros();
 aplicarFiltros();
-
 carregarLimiteArturAlvim().catch(erro => {
     console.error("Erro ao carregar o limite de Artur Alvim:", erro);
 });
