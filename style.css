@@ -1,5 +1,5 @@
 html {
-    scroll-behavior: smooth; /*Comportamento de deslize suave*/
+    scroll-behavior: smooth;
     scroll-padding-top: 100px;
 
 }
@@ -30,17 +30,14 @@ header {
     flex-direction: row;
     gap: 20px;
     
-    /* Fiz esta alteração abaixo para que fique no topo fixado.*/
     position: fixed;
     top: 0;
     left: 0;
-    z-index: 1000; /* Garante que ele fique por cima do mapa */
+    z-index: 1000;
     
     width: 100%;
     background: linear-gradient(to right, #2ecc71, #27ae60, #2980b9);
     color: white;
-
-    /*tamanho do header*/
     padding: 25px;
 }
 
@@ -122,11 +119,10 @@ header nav ul li a {
     transition: transform 0.25s ease;
 }
 
-header nav ul li a::after{ /*fiz para criar um pseudo-elemento*/
+header nav ul li a::after{
     content:'';
     position: absolute;
 
-    /*Aqui é onde a linha é criada*/
     width: 100%;
     height: 2px;
     background-color: white;
@@ -140,12 +136,12 @@ header nav ul li a::after{ /*fiz para criar um pseudo-elemento*/
     transition: transform 0.25s ease-out;
 }
 
-header nav ul li a:hover{ /*Quando passa o mouse vai expandir o texto*/
+header nav ul li a:hover{ 
     transform: scale(1.15);
 }
 
 header nav ul li a:hover::after {
-    transform: scaleX(1.1); /*Linha expande para 100% de largura*/
+    transform: scaleX(1.1); 
 }
 
 main {
@@ -159,26 +155,14 @@ main {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 #map-section {
     position: relative;
     display: flex;
     flex-direction: column;
     align-items: stretch;
     width: min(1200px, 92vw);
-    height: 72vh;
+    height: auto;
+    aspect-ratio: 4 / 3;
     padding: 18px;
     margin: 24px auto;
     border-radius: 28px;
@@ -317,9 +301,10 @@ main {
 #map {
     position: relative;
     width: 100%;
-    height: auto;
+    height: 0;
+    padding-top: 75%;
     min-height: 0;
-    flex: 1;
+    flex: 0 0 auto;
     border-radius: 22px;
     overflow: hidden;
     border: 3px solid rgba(18, 86, 45, 0.1);
@@ -327,6 +312,8 @@ main {
 }
 
 .leaflet-container {
+    position: absolute;
+    inset: 0;
     width: 100%;
     height: 100%;
     background: #dfeec9;
