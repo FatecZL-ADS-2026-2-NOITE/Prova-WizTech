@@ -1,36 +1,4 @@
 window.DADOS_MAPA = {
-    centro: [-23.54024, -46.48471],
-    zoomInicial: 15,
-    zoomMinimo: 14,
-    zoomMaximo: 20,
-    distanciaProximosKm: 2.1,
-    limites: {
-        mobile: [[-23.590, -46.560], [-23.500, -46.420]],
-        desktop: [[-23.565, -46.515], [-23.515, -46.455]]
-    },
-    tiles: {
-        url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-        atribuicao: "&copy; OpenStreetMap contributors",
-        zoomMaximo: 20,
-        zoomNativoMaximo: 19
-    },
-    limiteArturAlvim: {
-        url: "https://www.openstreetmap.org/api/0.6/relation/3049500/full",
-        relationId: "3049500"
-    },
-    coletaEstimada: [
-        { regiao: "Sul", dias: "quarta e sábado", horario: "das 13h às 16h" },
-        { regiao: "Centro", dias: "terça e sexta", horario: "das 10h às 13h" },
-        { regiao: "Norte", dias: "segunda e quinta", horario: "das 7h às 10h" }
-    ],
-    mudancasPrevistas: {
-        mensagens: [
-            "o caminhão sairá 1 hora mais cedo na próxima segunda.",
-            "a coleta será retificada para 13h às 16h por conta do trânsito.",
-            "a rota terá início às 9h e encerramento às 12h na quinta-feira.",
-            "haverá atendimento especial das 11h às 14h durante a próxima terça."
-        ]
-    },
     pontos: [
         {
             id: 1,
@@ -216,5 +184,37 @@ window.DADOS_MAPA = {
             horario: "Segunda a sexta, das 8h às 17h",
             rota: "https://www.google.com/maps/search/?api=1&query=Rua+Augusto+Carlos+Baumann+851+Itaquera"
         }
-    ]
+    ],
+    centro: [-23.54024, -46.48471],
+    zoomInicial: 15,
+    zoomMinimo: 14,
+    zoomMaximo: 20,
+    distanciaProximosKm: 2.1,
+    limites: {
+        mobile: [[-23.590, -46.560], [-23.500, -46.420]],
+        desktop: [[-23.565, -46.515], [-23.515, -46.455]]
+    },
+    tiles: {
+        url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+        atribuicao: "&copy; OpenStreetMap contributors",
+        zoomMaximo: 20,
+        zoomNativoMaximo: 19
+    },
+    limiteArturAlvim: {
+        url: "https://www.openstreetmap.org/api/0.6/relation/3049500/full",
+        relationId: "3049500"
+    },
+    coletaEstimada: [
+        { regiao: "Sul", dias: "quarta e sábado", horario: "das 13h às 16h" },
+        { regiao: "Centro", dias: "terça e sexta", horario: "das 10h às 13h" },
+        { regiao: "Norte", dias: "segunda e quinta", horario: "das 7h às 10h" }
+    ],
+    mudancasPrevistas: {
+        mensagens: [
+            "o caminhão sairá 1 hora mais cedo na próxima segunda.",
+            "a coleta será retificada para 13h às 16h por conta do trânsito.",
+            "a rota terá início às 9h e encerramento às 12h na quinta-feira.",
+            "haverá atendimento especial das 11h às 14h durante a próxima terça."
+        ]
+    },
 };
