@@ -1,7 +1,7 @@
 # Lista de Entidades e Atributos
 
 **Projeto 3 · Guia de Coleta Seletiva do Bairro**
-Cliente: Associação de Moradores do Jardim Camila
+Time WizTech · Cliente (fictício): Associação de Moradores do Jardim Camila
 FATEC ZL · Análise e Desenvolvimento de Sistemas · Projeto Desafio 01
 
 Regra usada: substantivo vira entidade, característica vira atributo, verbo que liga dois substantivos vira relação.
@@ -10,105 +10,130 @@ Regra usada: substantivo vira entidade, característica vira atributo, verbo que
 
 ## 1. Entidades
 
-### Entidade: Material
+### Entidade: PontoColeta
 
-Item que o morador quer descartar (ex.: caixa de leite, garrafa PET).
+Local onde o morador pode descartar resíduos (ecoponto, PEV ou ponto específico). Cada ponto aparece no mapa.
 
-| Atributo      | Tipo             | Identificador?  | Observação                                                        |
-|---------------|------------------|-----------------|-------------------------------------------------------------------|
-| id            | número           | Sim             | gerado automaticamente                                            |
-| material      | texto            | Não             | nome do item, obrigatório                                         |
-| reciclavel    | verdadeiro/falso | Não             | `true` se pode ir para a coleta seletiva                          |
-| decomposicao  | número           | Não             | tempo aproximado de decomposição, em anos                         |
-| dica          | texto            | Não             | orientação de preparo antes do descarte                           |
-| tipo          | texto            | Não             | referência ao nome do **TipoResiduo** (o material possui um tipo) |
-| ondeDescartar | texto            | Não             | atributo derivado: nomes dos **PontoColeta** que aceitam o tipo do material, separados por " e " (guardado como texto no array, conforme o brief) |
+| Atributo | Tipo | Identificador? | Observação |
+|---|---|---|---|
+| id | número | Sim | gerado automaticamente |
+| nome | texto | Não | obrigatório, ex.: "Ecoponto Vila Matilde" |
+| categoria | texto | Não | referência a **CategoriaPonto**: "ecoponto", "pev" ou "especifico" |
+| tipo | texto | Não | descrição do ponto, ex.: "Ecoponto municipal", "Ponto de entrega voluntária" |
+| endereco | texto | Não | obrigatório |
+| coordenadas | lista de 2 números | Não | [latitude, longitude], usadas para posicionar o ícone no mapa |
+| horario | texto | Não | ex.: "Segunda a sábado, das 8h às 17h" |
+| rota | texto | Não | link para ver a localização no Google Maps |
+| textoRota | texto | Não | opcional, texto do link de rota |
+| ativo | verdadeiro/falso | Não | se o ponto deve aparecer no mapa |
+| materiais | texto | Não | opcional (PEV): materiais aceitos, em texto corrido |
+| materiaisLabel | texto | Não | opcional (ponto específico): título da lista de materiais |
+| materiaisLista | lista de textos | Não | opcional (ponto específico): materiais coletados |
+
+### Entidade: CategoriaPonto
+
+Classificação do ponto, usada para escolher o ícone no mapa.
+
+| Atributo | Tipo | Identificador? | Observação |
+|---|---|---|---|
+| id | número | Sim | gerado automaticamente |
+| nome | texto | Não | "ecoponto", "pev" ou "especifico" |
 
 ### Entidade: TipoResiduo
 
-Categoria do resíduo, que define o filtro e a cor oficial da coleta seletiva.
+Tipo de resíduo da coleta seletiva, que define o filtro, a descrição exibida no fim da página e a cor oficial.
 
-| Atributo | Tipo   | Identificador? | Observação                                                               |
-|----------|--------|----------------|--------------------------------------------------------------------------|
-| id       | número | Sim            | gerado automaticamente                                                   |
-| nome     | texto  | Não            | Papel, Plástico, Vidro, Metal, Orgânico ou Rejeito                       |
-| cor      | texto  | Não            | cor oficial associada ao tipo (calculada no JavaScript a partir do nome) |
+| Atributo | Tipo | Identificador? | Observação |
+|---|---|---|---|
+| id | número | Sim | gerado automaticamente |
+| nome | texto | Não | Papel, Plástico, Vidro, Metal, Orgânico ou Rejeito |
+| cor | texto | Não | cor oficial do tipo, definida pelo JavaScript a partir do nome |
+| descricao | texto | Não | explicação do que entra e do que não entra no tipo |
 
-Valores de cor:
+Cores oficiais:
 
-| nome     | cor      |
-|----------|----------|
-| Papel    | azul     |
+| nome | cor |
+|---|---|
+| Papel | azul |
 | Plástico | vermelho |
-| Vidro    | verde    |
-| Metal    | amarelo  |
-| Orgânico | marrom   |
-| Rejeito  | cinza    |
+| Vidro | verde |
+| Metal | amarelo |
+| Orgânico | marrom |
+| Rejeito | cinza |
 
-### Entidade: PontoColeta
+### Entidade: PontoTipo
 
-Local ou forma de descarte onde o material deve ser entregue.
+Entidade associativa que resolve a relação N para N entre PontoColeta e TipoResiduo (quais tipos cada ponto aceita).
 
-| Atributo | Tipo   | Identificador? | Observação                            |
-|----------|--------|----------------|---------------------------------------|
-| id       | número | Sim            | gerado automaticamente                |
-| nome     | texto  | Não            | ex.: "Ecoponto da Rua das Flores"     |
-| endereco | texto  | Não            | opcional para descartes porta a porta |
-
-### Entidade: TipoPonto
-
-Entidade associativa que resolve a relação N para N entre TipoResiduo e PontoColeta (quais tipos de resíduo cada ponto aceita).
-
-| Atributo | Tipo   | Identificador?       | Observação                   |
-|----------|--------|----------------------|------------------------------|
-| tipoId   | número | Sim (parte da chave) | referência a **TipoResiduo** |
-| pontoId  | número | Sim (parte da chave) | referência a **PontoColeta** |
-
----|---|---|---|
-| materialId | número | Sim (parte da chave) | referência a **Material** |
+| Atributo | Tipo | Identificador? | Observação |
+|---|---|---|---|
 | pontoId | número | Sim (parte da chave) | referência a **PontoColeta** |
+| tipoId | número | Sim (parte da chave) | referência a **TipoResiduo** |
+
+### Entidade: ColetaEstimada
+
+Dias e horários estimados da coleta seletiva porta a porta, por região.
+
+| Atributo | Tipo | Identificador? | Observação |
+|---|---|---|---|
+| regiao | texto | Sim | "Sul", "Centro" ou "Norte" |
+| dias | texto | Não | ex.: "quarta e sábado" |
+| horario | texto | Não | ex.: "das 13h às 16h" |
 
 ---
 
 ## 2. Relações
 
-- Um **Material** possui um **TipoResiduo**. (N para 1)
-- Um **TipoResiduo** possui vários **Materiais**. (1 para N)
-- Um **TipoResiduo** pode ser aceito em vários **PontosColeta**. (N para N)
+- Um **PontoColeta** pertence a uma **CategoriaPonto**. (N para 1)
+- Uma **CategoriaPonto** possui vários **PontosColeta**. (1 para N)
 - Um **PontoColeta** aceita vários **TiposResiduo**. (N para N)
+- Um **TipoResiduo** é aceito em vários **PontosColeta**. (N para N)
 
-A relação N para N é resolvida pela entidade associativa **TipoPonto**: cada linha liga um TipoResiduo a um PontoColeta que o aceita. Assim, o ponto onde um material deve ser descartado é consequência do tipo dele (ex.: todo material do tipo Vidro vai para o Ecoponto).
+A relação N para N é resolvida pela entidade associativa **PontoTipo**: cada linha liga um PontoColeta a um TipoResiduo que ele aceita.
+
+**ColetaEstimada** não se relaciona com as demais entidades nesta versão: os dados trazem a região apenas como texto, sem ligação com as coordenadas dos pontos.
 
 ### Diagrama
 
 ```mermaid
 erDiagram
-    TIPORESIDUO ||--o{ MATERIAL : "possui"
-    TIPORESIDUO ||--o{ TIPOPONTO : "é aceito em"
-    PONTOCOLETA ||--o{ TIPOPONTO : "aceita"
+    CATEGORIAPONTO ||--o{ PONTOCOLETA : "possui"
+    PONTOCOLETA ||--o{ PONTOTIPO : "aceita"
+    TIPORESIDUO ||--o{ PONTOTIPO : "é aceito em"
 
-    TIPORESIDUO {
+    CATEGORIAPONTO {
         int id PK
         string nome
-        string cor
     }
     PONTOCOLETA {
         int id PK
         string nome
-        string endereco
-    }
-    MATERIAL {
-        int id PK
-        string material
-        boolean reciclavel
-        int decomposicao
-        string dica
+        string categoria
         string tipo
-        string ondeDescartar
+        string endereco
+        float[] coordenadas
+        string horario
+        string rota
+        string textoRota
+        boolean ativo
+        string materiais
+        string materiaisLabel
+        string[] materiaisLista
     }
-    TIPOPONTO {
-        int tipoId PK
+    TIPORESIDUO {
+        int id PK
+        string nome
+        string cor
+        string descricao
+    }
+    PONTOTIPO {
         int pontoId PK
+        int tipoId PK
+    }
+    COLETAESTIMADA {
+        string regiao PK
+        string dias
+        string horario
     }
 ```
 
@@ -116,16 +141,22 @@ erDiagram
 
 ## 3. Como o modelo aparece no `dados.js`
 
-O brief pede um único array de objetos. Por isso, no `dados.js`, cada objeto representa um **Material** e traz o nome do **TipoResiduo** (`tipo`) e do **PontoColeta** (`ondeDescartar`) escritos como texto.
+| Entidade | Onde aparece no código |
+|---|---|
+| PontoColeta | cada objeto do array `pontos` dentro de `DADOS_MAPA` (15 objetos) |
+| CategoriaPonto | propriedade `categoria` de cada ponto |
+| TipoResiduo | nome, cor e descrição de cada tipo ficam fora do `dados.js` enviado |
+| PontoTipo | ligação implícita nos textos `materiais` e `materiaisLista` |
+| ColetaEstimada | array `coletaEstimada` dentro de `DADOS_MAPA` (3 objetos) |
 
-| Entidade    | Onde aparece no código                                                                                                      |
-|-------------|-----------------------------------------------------------------------------------------------------------------------------|
-| Material    | cada objeto do array `MATERIAIS`                                                                                            |
-| TipoResiduo | propriedade `tipo` (o nome é a chave usada para filtrar e para escolher a cor no JavaScript)                                |
-| PontoColeta | propriedade `ondeDescartar`, que pode listar mais de um ponto no mesmo texto                                                |
-| TipoPonto   | não existe como estrutura própria; a ligação está implícita: todos os materiais do mesmo `tipo` têm o mesmo `ondeDescartar` |
+As configurações do mapa (`centro`, `zoomInicial`, `limites`, `tiles` etc.) são parâmetros de exibição e não entidades do modelo.
 
-Na segunda metade do semestre, quando o modelo virar banco de dados, `tipo` vira uma chave estrangeira (`tipo_id`) em `Material`, e `ondeDescartar` deixa de ser guardado: os pontos passam a ser consultados pela tabela `TipoPonto`, a partir do tipo do material. Isso evita repetir texto em cada linha.
+Na segunda metade do semestre, quando o modelo virar banco de dados, `categoria` vira uma chave estrangeira (`categoria_id`) em `PontoColeta`, e os textos de materiais passam a ser linhas da tabela `PontoTipo`.
 
 ---
 
+## 4. Observações
+
+- A entrevista com o cliente é fictícia, com autorização do professor.
+- Os dias e horários de coleta (`coletaEstimada`) são estimativas.
+- Os pontos de coleta representados no mapa estão na região de Artur Alvim e arredores.
