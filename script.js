@@ -41,6 +41,18 @@ const iconesMarcador = {
     especifico: criarIconeMarcador("#f2b705", "ponto-especifico-marker")
 };
 
+function gerarMudancasPrevistas(ponto) {
+    if (ponto.mudancasPrevistas !== true) {
+        return "Sem mudanças previstas.";
+    }
+
+    const mensagem = ponto.mudancaPrevista ||
+        (dados.mudancasPrevistas?.mensagens?.[(Number(ponto.id) - 1) % (dados.mudancasPrevistas?.mensagens?.length || 1)] ||
+            "Sem mudanças previstas.");
+
+    return `Mudanças previstas: ${mensagem}`;
+}
+
 function criarConteudoPopup(ponto) {
     const tipo = ponto.tipo ? `<br><b>Tipo:</b> ${ponto.tipo}` : "";
     const materiais = ponto.materiais
@@ -55,7 +67,8 @@ function criarConteudoPopup(ponto) {
         : "";
 
     return `<b>${ponto.nome}</b><br>${ponto.endereco}${tipo}${materiais}${listaMateriais}${rota}` +
-        `<br><b>Funcionamento:</b> ${ponto.horario}.`;
+        `<br><b>Funcionamento:</b> ${ponto.horario}.` +
+        `<br><b>Mudanças previstas:</b> ${gerarMudancasPrevistas(ponto)}`;
 }
 
 function criarPonto(ponto) {
