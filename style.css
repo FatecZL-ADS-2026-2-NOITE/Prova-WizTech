@@ -16,12 +16,15 @@ body {
 }
 
 header {
+    position:sticky;
+    top:0;
+    z-index:1000;
+
     display:flex;
     justify-content: space-between;
     align-items: center;
     flex-direction: row;
     gap: 20px;
-    position:sticky;
     width: 100%;
 }
 
