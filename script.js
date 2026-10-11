@@ -42,17 +42,15 @@ const iconesMarcador = {
 };
 
 function gerarMudancasPrevistas(ponto) {
-    const padrao = (Number(ponto.id) || 0) % 6;
-    const alteracoes = [
-        "Mudanças previstas: o caminhão de coleta será antecipado para 7h às 10h na próxima segunda.",
-        "Mudanças previstas: a coleta será retificada para 13h às 16h por conta da logística de trânsito.",
-        "Mudanças previstas: a rota do caminhão terá início às 9h e encerramento às 12h na quinta-feira.",
-        "Mudanças previstas: haverá atendimento especial das 11h às 14h durante a próxima terça.",
-        "Mudanças previstas: o caminhão de coleta sairá com 1 hora de atraso, começando às 8h30.",
-        "Sem mudanças previstas."
-    ];
+    if (ponto.mudancasPrevistas !== true) {
+        return "Sem mudanças previstas.";
+    }
 
-    return alteracoes[padrao];
+    const mensagem = ponto.mudancaPrevista ||
+        (dados.mudancasPrevistas?.mensagens?.[(Number(ponto.id) - 1) % (dados.mudancasPrevistas?.mensagens?.length || 1)] ||
+            "Sem mudanças previstas.");
+
+    return `Mudanças previstas: ${mensagem}`;
 }
 
 function criarConteudoPopup(ponto) {

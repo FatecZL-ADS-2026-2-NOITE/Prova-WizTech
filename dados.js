@@ -23,6 +23,14 @@ window.DADOS_MAPA = {
         { regiao: "Centro", dias: "terça e sexta", horario: "das 10h às 13h" },
         { regiao: "Norte", dias: "segunda e quinta", horario: "das 7h às 10h" }
     ],
+    mudancasPrevistas: {
+        mensagens: [
+            "o caminhão sairá 1 hora mais cedo na próxima segunda.",
+            "a coleta será retificada para 13h às 16h por conta do trânsito.",
+            "a rota terá início às 9h e encerramento às 12h na quinta-feira.",
+            "haverá atendimento especial das 11h às 14h durante a próxima terça."
+        ]
+    },
     pontos: [
         {
             id: 1,
@@ -44,6 +52,8 @@ window.DADOS_MAPA = {
             endereco: "Rua Praia de Mucuripe, 685, Jardim Artur Alvim",
             tipo: "Ecoponto municipal",
             horario: "Segunda a sexta, das 8h às 17h",
+            mudancasPrevistas: true,
+            mudancaPrevista: "o caminhão sairá 1 hora mais cedo na próxima segunda.",
             rota: "https://www.google.com/maps/search/?api=1&query=Ecoponto+Franquinho+Sao+Paulo"
         },
         {
@@ -78,6 +88,8 @@ window.DADOS_MAPA = {
             endereco: "Rua Ana Perena, altura do nº 110",
             tipo: "Ecoponto municipal",
             horario: "Segunda a sábado, das 8h às 17h",
+            mudancasPrevistas: true,
+            mudancaPrevista: "a coleta será retificada para 13h às 16h por conta do trânsito.",
             rota: "https://www.google.com/maps/search/?api=1&query=Ecoponto+Jose+Bonifacio+Rua+Ana+Perena+Sao+Paulo"
         },
         {
@@ -134,6 +146,8 @@ window.DADOS_MAPA = {
             tipo: "Recicláveis",
             materiais: "Plástico, papel, papelão, vidro e metal",
             horario: "Segunda a sábado, das 8h às 17h",
+            mudancasPrevistas: true,
+            mudancaPrevista: "a rota terá início às 9h e encerramento às 12h na quinta-feira.",
             rota: "https://www.google.com/maps/search/?api=1&query=Rua+Ana+Perena+110+Sao+Paulo",
             textoRota: "Ver localização"
         },
@@ -160,6 +174,8 @@ window.DADOS_MAPA = {
             tipo: "Ponto de entrega voluntária",
             materiais: "Plástico, papel, papelão, vidro e metal",
             horario: "Segunda a sábado, das 8h às 17h",
+            mudancasPrevistas: true,
+            mudancaPrevista: "haverá atendimento especial das 11h às 14h durante a próxima terça.",
             rota: "https://www.google.com/maps/search/?api=1&query=Rua+Bernardino+Prudenti+194+Sao+Paulo",
             textoRota: "Ver localização"
         },
