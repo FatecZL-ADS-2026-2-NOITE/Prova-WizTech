@@ -1,3 +1,9 @@
+html {
+    scroll-behavior: smooth; /*Comportamento de deslize suave*/
+    scroll-padding-top: 100px;
+
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -13,26 +19,137 @@ body {
     justify-content: center;
     background: transparent;
     font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0px;
+    padding: 0px;
 }
 
 header {
-    position:sticky;
-    top:0;
-    z-index:1000;
-
-    display:flex;
+    display: flex;
     justify-content: space-between;
     align-items: center;
     flex-direction: row;
     gap: 20px;
+    
+    /* Fiz esta alteração abaixo para que fique no topo fixado.*/
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000; /* Garante que ele fique por cima do mapa */
+    
     width: 100%;
+    background: linear-gradient(to right, #2ecc71, #27ae60, #2980b9);
+    color: white;
+
+    /*tamanho do header*/
+    padding: 25px;
 }
+
+
+/*animação criativa*/
+
+header h1{
+    margin-left: 30px;
+    position: relative;
+    cursor: pointer;
+    display: inline-block;
+}
+
+header h1::after{
+    content: '';
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: transparent;
+    opacity: 0;
+
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    z-index: 1500;
+}
+
+header h1:hover::after {
+    animation: explosaoBolinhas 0.6s ease-out forwards;
+}
+
+@keyframes explosaoBolinhas {
+    0%{
+        transform: translate(-50%, -50%) scale(0);
+        opacity: 0;
+        box-shadow: 0 0 0 transparent;
+    }
+
+    30%{
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+        box-shadow: 
+            -60px -20px 0 white,  
+            65px -15px 0 white,   
+            -50px 25px 0 white,   
+            55px 20px 0 white,    
+            0px -35px 0 white;  
+    }
+
+    100%{
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(1.2);
+        box-shadow: 
+        -70px -25px 0 #2ecc71,
+        75px -20px 0 #3498db,
+        -60px 30px 0 #f1c40f,
+        65px 25px 0 #e74c3c,
+        0px -40px 0 #2ecc71;
+    }
+}
+
+
 
 header nav ul{
     display: flex;
     align-items: center;
     gap: 20px;
     list-style: none;
+    margin-right: 30px;
+    color: white;
+}
+
+header nav ul li a {
+    text-decoration: none;
+    position: relative;
+    color: white;
+    display: inline-block;
+    transition: transform 0.25s ease;
+}
+
+header nav ul li a::after{ /*fiz para criar um pseudo-elemento*/
+    content:'';
+    position: absolute;
+
+    /*Aqui é onde a linha é criada*/
+    width: 100%;
+    height: 2px;
+    background-color: white;
+    
+
+    bottom: -5px;
+    left: 0;
+
+    transform-origin: bottom center;
+    transform: scalex(0);
+    transition: transform 0.25s ease-out;
+}
+
+header nav ul li a:hover{ /*Quando passa o mouse vai expandir o texto*/
+    transform: scale(1.15);
+}
+
+header nav ul li a:hover::after {
+    transform: scaleX(1.1); /*Linha expande para 100% de largura*/
+}
+
+main {
+    margin-top: 60px;
 }
 
 /* Ken pode começar a escrever aqui, deixa a parte do mapa no final msm*/
@@ -61,8 +178,7 @@ header nav ul{
     flex-direction: column;
     align-items: stretch;
     width: min(1200px, 92vw);
-    height: auto;
-    aspect-ratio: 4 / 3;
+    height: 72vh;
     padding: 18px;
     margin: 24px auto;
     border-radius: 28px;
@@ -201,10 +317,9 @@ header nav ul{
 #map {
     position: relative;
     width: 100%;
-    height: 0;
-    padding-top: 75%;
+    height: auto;
     min-height: 0;
-    flex: 0 0 auto;
+    flex: 1;
     border-radius: 22px;
     overflow: hidden;
     border: 3px solid rgba(18, 86, 45, 0.1);
@@ -212,8 +327,6 @@ header nav ul{
 }
 
 .leaflet-container {
-    position: absolute;
-    inset: 0;
     width: 100%;
     height: 100%;
     background: #dfeec9;
