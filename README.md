@@ -28,11 +28,17 @@ Orgânico	Marrom
 Rejeito	Cinza
 Integrantes e contribuições
 Integrante	O que fez
+<br>
 Mario	Estrutura HTML (index.html)
+<br>
 Gabriel Ken	CSS (style.css)
+<br>
 Renato	Interação com JavaScript (script.js)
+<br>
 Gabriel Delatim	Modelagem (docs/entidades.md), README e dados.js
+<br>
 Samuel Elvis	Entrevista e requisitos (docs/requisitos)
+<br>
 
 Como abrir o site
 Baixe ou clone o repositório.
