@@ -1,4 +1,3 @@
-[README.md](https://github.com/user-attachments/files/33315079/README.md)
 # AcheLixo · Guia de Coleta Seletiva · Jardim Camila
 
 Projeto do Desafio PI · FATEC ZL · Análise e Desenvolvimento de Sistemas
@@ -119,6 +118,5 @@ A lista de entidades, atributos e relações está em [`docs/entidades.md`](docs
 - A entrevista com o cliente é fictícia, com autorização do professor.
 - Os dias e horários de coleta (`coletaEstimada`) são estimativas.
 - Os pontos de coleta ficam na região de Artur Alvim e arredores.
-- Fonte dos pontos, endereços e horários: [PREENCHER COM A FONTE CONSULTADA].
 - Mapa: © OpenStreetMap contributors.
-- Fotos da seção de descarte (`assets/fotos-descarte`): [PREENCHER COM FONTE E CRÉDITO].
+
