@@ -9,11 +9,16 @@ Sobre o projeto
 A Associação de Moradores recebe reclamações de descarte errado toda semana, e a informação sobre onde e como descartar está espalhada entre grupos de moradores e avisos locais. Este site reúne tudo em um só lugar: o morador vê no mapa os pontos de coleta do bairro e descobre o que cada tipo de resíduo aceita.
 
 Funcionalidades
-Mapa interativo com informações dos pontos de coleta do bairro
-Filtro por tipo de resíduo (Papel, Plástico, Vidro, Metal, Orgânico e Rejeito)
-Descrições dos tipos de resíduo no fim da página
-Ícone do ponto de coleta que leva à descrição do resíduo
-Diferencial do projeto: cada tipo de resíduo recebe a cor oficial da coleta seletiva, definida pelo JavaScript a partir da propriedade tipo
+-Mapa interativo com informações dos pontos de coleta do bairro 
+<br>
+-Filtro por tipo de resíduo (Papel, Plástico, Vidro, Metal, Orgânico e Rejeito)
+<br>
+-Descrições dos tipos de resíduo no fim da página
+<br>
+-Ícone do ponto de coleta que leva à descrição do resíduo
+<br>
+-Diferencial do projeto: cada tipo de resíduo recebe a cor oficial da coleta seletiva, definida pelo JavaScript a partir da propriedade tipo
+<br>
 Tipo	Cor
 Papel	Azul
 Plástico	Vermelho
