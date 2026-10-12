@@ -19,7 +19,7 @@ const criarElemento = (tag, classe, texto) => {
     if (classe) elemento.className = classe;
     if (texto !== undefined) elemento.textContent = texto;
     return elemento;
-};
+};              
 
 function formatarDecomposicao(anos) {
     const quantidade = anos < 1 ? Math.max(1, Math.round(anos * 12)) : anos;

@@ -713,9 +713,9 @@ footer{
 @media (max-width: 640px) {
     #map-section {
         width: min(94vw, 100%);
-        height: 86vh;
-        height: 86dvh;
-        min-height: 520px;
+        height: auto;
+        min-height: 0;
+        aspect-ratio: auto;
         padding: 10px;
         border-radius: 22px;
     }
@@ -738,8 +738,10 @@ footer{
     }
 
     .map-legend {
-        right: 18px;
-        bottom: 36px;
+        position: static;
+        order: 2;
+        align-self: flex-end;
+        margin-top: 8px;
         gap: 6px;
         min-width: 148px;
         padding: 9px 11px;
@@ -787,6 +789,7 @@ footer{
     }
 
     #map {
+        order: 1;
         border-radius: 16px;
     }
 
