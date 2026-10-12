@@ -1,6 +1,14 @@
 const L = window.L;
 const dados = window.DADOS_MAPA;
 const filtros = { area: "todos", categoria: "todos" };
+const coresMateriais = {
+    "Papel": "papel",
+    "Plástico": "plastico",
+    "Vidro": "vidro",
+    "Metal": "metal",
+    "Orgânico": "organico",
+    "Rejeito": "rejeito"
+};
 const mobile = window.matchMedia("(max-width: 640px)").matches;
 const limites = mobile ? dados.limites.mobile : dados.limites.desktop;
 const mapa = L.map("map", {
@@ -9,6 +17,121 @@ const mapa = L.map("map", {
     maxBounds: L.latLngBounds(limites[0], limites[1]),
     maxBoundsViscosity: mobile ? 0.7 : 1
 }).setView(dados.centro, dados.zoomInicial);
+
+function formatarDecomposicao(anos) {
+    if (anos < 1) {
+        const meses = Math.max(1, Math.round(anos * 12));
+        return `Aproximadamente ${meses} ${meses === 1 ? "mês" : "meses"}`;
+    }
+
+    return `Aproximadamente ${anos} ${anos === 1 ? "ano" : "anos"}`;
+}
+
+function criarInformacaoMaterial(rotulo, valor) {
+    const paragrafo = document.createElement("p");
+    paragrafo.className = "material-info";
+
+    const titulo = document.createElement("strong");
+    titulo.textContent = `${rotulo}: `;
+    paragrafo.append(titulo, document.createTextNode(valor));
+    return paragrafo;
+}
+
+function criarCartaoMaterial(material) {
+    const cartao = document.createElement("article");
+    const classeTipo = coresMateriais[material.tipo] || "outro";
+    cartao.className = `material-card material-${classeTipo}`;
+
+    const topo = document.createElement("div");
+    topo.className = "material-card-top";
+
+    const tipo = document.createElement("span");
+    tipo.className = "material-tipo";
+    tipo.textContent = material.tipo;
+    topo.append(tipo);
+
+    const status = document.createElement("span");
+    status.className = `material-status ${material.reciclavel ? "reciclavel" : "nao-reciclavel"}`;
+    status.textContent = material.reciclavel ? "Reciclável" : "Não reciclável";
+    topo.append(status);
+
+    const titulo = document.createElement("h3");
+    titulo.className = "material-nome";
+    titulo.textContent = material.material;
+
+    const dica = document.createElement("p");
+    dica.className = "material-dica";
+    dica.textContent = material.dica;
+
+    cartao.append(
+        topo,
+        titulo,
+        criarInformacaoMaterial("Onde descartar", material.ondeDescartar),
+        criarInformacaoMaterial("Decomposição estimada", formatarDecomposicao(material.decomposicao)),
+        dica
+    );
+    return cartao;
+}
+
+function renderizarMateriais() {
+    const lista = document.querySelector("#materiais-lista");
+    const busca = document.querySelector("#material-busca");
+    const filtro = document.querySelector("#material-filtro");
+    const contagem = document.querySelector("#materiais-contagem");
+
+    if (!Array.isArray(dados.materiais)) {
+        throw new Error("A lista de materiais não está disponível em DADOS_MAPA.");
+    }
+
+    const tipos = [...new Set(dados.materiais.map(material => material.tipo))].sort((a, b) =>
+        a.localeCompare(b, "pt-BR")
+    );
+    tipos.forEach(tipo => {
+        const opcao = document.createElement("option");
+        opcao.value = tipo;
+        opcao.textContent = tipo;
+        filtro.append(opcao);
+    });
+
+    function atualizarLista() {
+        const termo = busca.value
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .toLocaleLowerCase("pt-BR")
+            .trim();
+        const tipoSelecionado = filtro.value;
+        const encontrados = dados.materiais.filter(material => {
+            const correspondeTipo = !tipoSelecionado || material.tipo === tipoSelecionado;
+            const textoMaterial = [
+                material.material,
+                material.tipo,
+                material.ondeDescartar,
+                material.dica
+            ].join(" ")
+                .normalize("NFD")
+                .replace(/[\u0300-\u036f]/g, "")
+                .toLocaleLowerCase("pt-BR");
+
+            return correspondeTipo && textoMaterial.includes(termo);
+        });
+
+        lista.replaceChildren(...encontrados.map(criarCartaoMaterial));
+        if (encontrados.length === 0) {
+            const vazio = document.createElement("p");
+            vazio.className = "material-sem-resultados";
+            vazio.textContent = "Nenhum material encontrado. Tente outro termo ou tipo.";
+            lista.append(vazio);
+        }
+
+        contagem.textContent = `${encontrados.length} ${encontrados.length === 1 ? "material encontrado" : "materiais encontrados"}`;
+    }
+
+    busca.addEventListener("input", atualizarLista);
+    filtro.addEventListener("change", atualizarLista);
+    atualizarLista();
+}
+
+renderizarMateriais();
 
 L.tileLayer(dados.tiles.url, {
     attribution: dados.tiles.atribuicao,
@@ -128,97 +251,21 @@ function pontoDentroDoPoligono(latlng, coordenadas) {
     return dentro;
 }
 
-function iguaisCoordenadas(a, b) {
-    return a[0] === b[0] && a[1] === b[1];
-}
-
-function conectarCaminhos(caminhos) {
-    const aneis = [];
-
-    while (caminhos.length > 0) {
-        const anel = caminhos.shift();
-        let conectado = true;
-
-        while (conectado) {
-            conectado = false;
-            const inicio = anel[0];
-            const fim = anel[anel.length - 1];
-
-            for (let i = 0; i < caminhos.length; i++) {
-                const caminho = caminhos[i];
-                const primeiro = caminho[0];
-                const ultimo = caminho[caminho.length - 1];
-
-                if (iguaisCoordenadas(fim, primeiro)) {
-                    anel.push(...caminho.slice(1));
-                } else if (iguaisCoordenadas(fim, ultimo)) {
-                    anel.push(...caminho.reverse().slice(1));
-                } else if (iguaisCoordenadas(inicio, ultimo)) {
-                    anel.unshift(...caminho.slice(0, -1));
-                } else if (iguaisCoordenadas(inicio, primeiro)) {
-                    anel.unshift(...caminho.reverse().slice(0, -1));
-                } else {
-                    continue;
-                }
-
-                caminhos.splice(i, 1);
-                conectado = true;
-                break;
-            }
-        }
-
-        if (iguaisCoordenadas(anel[0], anel[anel.length - 1]) && anel.length >= 4) {
-            aneis.push(anel);
-        }
+function desenharLimiteArturAlvim() {
+    const coordenadas = dados.limiteArturAlvim.coordenadas;
+    if (!Array.isArray(coordenadas) || coordenadas.length < 4) {
+        throw new Error("As coordenadas locais do limite de Artur Alvim estão inválidas.");
     }
 
-    return aneis;
-}
-
-async function carregarLimiteArturAlvim() {
-    const resposta = await fetch(dados.limiteArturAlvim.url);
-
-    const documento = new DOMParser().parseFromString(
-        await resposta.text(),
-        "application/xml"
-    );
-
-    const nos = new Map();
-    documento.querySelectorAll("node").forEach(no => {
-        nos.set(no.getAttribute("id"), [
-            Number(no.getAttribute("lat")),
-            Number(no.getAttribute("lon"))
-        ]);
-    });
-
-    const vias = new Map();
-    documento.querySelectorAll("way").forEach(via => {
-        const pontos = Array.from(via.querySelectorAll("nd"))
-            .map(nd => nos.get(nd.getAttribute("ref")))
-            .filter(Boolean);
-        vias.set(via.getAttribute("id"), pontos);
-    });
-
-    const caminhos = Array.from(documento.querySelectorAll(
-        `relation[id="${dados.limiteArturAlvim.relationId}"] > member[type="way"][role="outer"]`
-    ))
-        .map(membro => vias.get(membro.getAttribute("ref")))
-        .filter(caminho => caminho && caminho.length >= 2)
-        .map(caminho => [...caminho]);
-    const aneis = conectarCaminhos(caminhos);
-
-    aneis.forEach(anel => {
-        const poligono = L.polygon(anel, {
-            color: "#ff6500",
-            weight: 3,
-            opacity: 1,
-            fillColor: "#ff6500",
-            fillOpacity: 0.08,
-            lineJoin: "round"
-        }).addTo(camadaLimite);
-
-        limitesArturAlvim.push(poligono);
-    });
+    const poligono = L.polygon(coordenadas, {
+        color: "#ff6500",
+        weight: 3,
+        opacity: 1,
+        fillColor: "#ff6500",
+        fillOpacity: 0.08,
+        lineJoin: "round"
+    }).addTo(camadaLimite);
+    limitesArturAlvim.push(poligono);
 
     aplicarFiltros();
 }
@@ -299,9 +346,7 @@ function configurarFiltros() {
 pontosMapa.forEach(ponto => mapa.addLayer(ponto.marker));
 configurarFiltros();
 aplicarFiltros();
-carregarLimiteArturAlvim().catch(erro => {
-    console.error("Erro ao carregar o limite de Artur Alvim:", erro);
-});
+desenharLimiteArturAlvim();
 
 mapa.on("click", evento => {
     if (estaDentroDeArturAlvim(evento.latlng)) {

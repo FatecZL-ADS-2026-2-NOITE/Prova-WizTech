@@ -509,6 +509,188 @@ footer{
     color: #214f35;
 }
 
+.materiais-intro {
+    max-width: 760px;
+    margin: 0 auto 30px;
+    padding: 0 20px;
+    text-align: center;
+}
+
+.materiais-intro h2 {
+    margin-bottom: 12px;
+    color: #214f35;
+}
+
+.materiais-intro p {
+    color: #5c6e62;
+    line-height: 1.6;
+}
+
+#materiais {
+    width: min(1200px, 92vw);
+    margin: 50px auto;
+}
+
+.materiais-controles {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(220px, 1fr);
+    gap: 14px;
+    margin: 0 0 10px;
+}
+
+.materiais-controles label {
+    display: grid;
+    gap: 7px;
+    color: #35483b;
+    font-size: 0.84rem;
+    font-weight: 700;
+}
+
+.materiais-controles input,
+.materiais-controles select {
+    width: 100%;
+    min-height: 44px;
+    padding: 10px 12px;
+    border: 1px solid #cdd9cf;
+    border-radius: 10px;
+    background: #fff;
+    color: #263b2d;
+    font: inherit;
+    font-weight: 400;
+}
+
+.materiais-controles input:focus,
+.materiais-controles select:focus {
+    border-color: #198754;
+    outline: 2px solid rgba(25, 135, 84, 0.2);
+    outline-offset: 1px;
+}
+
+.materiais-contagem {
+    margin: 0 0 14px;
+    color: #5c6e62;
+    font-size: 0.82rem;
+}
+
+.materiais-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr));
+    gap: 18px;
+}
+
+.material-sem-resultados {
+    grid-column: 1 / -1;
+    padding: 24px;
+    border: 1px dashed #b9c9bd;
+    border-radius: 12px;
+    color: #5c6e62;
+    text-align: center;
+}
+
+.material-card {
+    --material-cor: #66717a;
+    display: flex;
+    flex-direction: column;
+    gap: 13px;
+    min-width: 0;
+    padding: 20px;
+    border: 1px solid #e3e9e4;
+    border-left: 6px solid var(--material-cor);
+    border-radius: 14px;
+    background: #fff;
+    box-shadow: 0 8px 22px rgba(22, 54, 34, 0.08);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.material-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 13px 28px rgba(22, 54, 34, 0.14);
+}
+
+.material-papel {
+    --material-cor: #2878b8;
+}
+
+.material-plastico {
+    --material-cor: #c94f58;
+}
+
+.material-vidro {
+    --material-cor: #2e9866;
+}
+
+.material-metal {
+    --material-cor: #c99a00;
+}
+
+.material-organico {
+    --material-cor: #825b35;
+}
+
+.material-rejeito {
+    --material-cor: #66717a;
+}
+
+.material-card-top {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.material-tipo {
+    padding: 5px 10px;
+    border-radius: 999px;
+    background: var(--material-cor);
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 800;
+}
+
+.material-metal .material-tipo {
+    color: #332800;
+}
+
+.material-status {
+    font-size: 0.72rem;
+    font-weight: 700;
+}
+
+.material-status.reciclavel {
+    color: #176b3a;
+}
+
+.material-status.nao-reciclavel {
+    color: #68737b;
+}
+
+.material-nome {
+    color: #263b2d;
+    font-size: 1.12rem;
+}
+
+.material-info {
+    color: #526258;
+    font-size: 0.88rem;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+.material-info strong {
+    color: #35483b;
+}
+
+.material-dica {
+    margin-top: auto;
+    padding: 10px 12px;
+    border-radius: 10px;
+    background: #f3f7f3;
+    color: #425849;
+    font-size: 0.84rem;
+    line-height: 1.5;
+}
+
 .leaflet-control-zoom {
     border: none !important;
     box-shadow: 0 8px 20px rgba(24, 58, 36, 0.15) !important;
@@ -606,6 +788,18 @@ footer{
 
     #map {
         border-radius: 16px;
+    }
+
+    #materiais {
+        width: min(94vw, 100%);
+    }
+
+    .materiais-controles {
+        grid-template-columns: 1fr;
+    }
+
+    .materiais-grid {
+        grid-template-columns: 1fr;
     }
 
     .leaflet-popup-content {

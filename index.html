@@ -30,6 +30,7 @@
             <li><a href="#Inicio">Inicio</a></li>
             <li><a href="#map">Mapa</a></li>
             <li><a href="#tipo-lixo">Tipos de Lixos</a></li>
+            <li><a href="#materiais">Materiais</a></li>
             <li><a href="#creditos">Creditos</a></li>
         </ul>
     </nav>
@@ -88,8 +89,6 @@
         </div>
         
         <div class="lixo-container">
-
-            <!-- Card 1 -->
             <div class="lixo-card">
                 <div class="lixo-img-wrapper">
                     <img src="assets/fotos-descarte/ecoponto_imagem.jpg" alt="Foto de um Ecoponto organizado">
@@ -100,7 +99,6 @@
                 </div>
             </div>
 
-            <!-- Card 2 invertido -->
             <div class="lixo-card card-reverse">
                 <div class="lixo-img-wrapper">
                     <img src="assets/fotos-descarte/PEVs_imagem.jpg" alt="Contêineres de Pontos de Entrega Voluntária">
@@ -111,7 +109,6 @@
                 </div>
             </div>
 
-            <!-- Card 3 -->
             <div class="lixo-card">
                 <div class="lixo-img-wrapper">
                     <img src="assets/fotos-descarte/coleta_especifica_foto.jpg" alt="Descarte de pilhas e eletrônicos">
@@ -123,6 +120,29 @@
             </div>
 
         </div>
+    </section>
+
+    <hr style="margin: 50px";>
+
+    <section id="materiais" aria-labelledby="materiais-titulo">
+        <div class="materiais-intro">
+            <h2 id="materiais-titulo">Guia de materiais</h2>
+            <p>Consulte como separar e descartar cada material. A cor de cada cartão indica o tipo de resíduo.</p>
+        </div>
+        <div class="materiais-controles">
+            <label class="material-busca">
+                <span>Buscar material</span>
+                <input id="material-busca" type="search" placeholder="Ex.: garrafa, papel..." autocomplete="off">
+            </label>
+            <label class="material-filtro">
+                <span>Filtrar por tipo</span>
+                <select id="material-filtro">
+                    <option value="">Todos os tipos</option>
+                </select>
+            </label>
+        </div>
+        <p id="materiais-contagem" class="materiais-contagem" role="status" aria-live="polite"></p>
+        <div id="materiais-lista" class="materiais-grid" aria-live="polite"></div>
     </section>
 
     <hr style="margin: 50px";>
