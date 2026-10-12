@@ -45,7 +45,7 @@ O **AcheLixo** reúne tudo em um só lugar: o morador vê no mapa os pontos de c
 ## Como abrir o site
 
 1. Baixe ou clone o repositório.
-2. Confirme que a pasta `node_modules/leaflet` está no projeto. Se não estiver, rode `npm install leaflet` na raiz.
+2. Confirme que a pasta `leaflet/dist` está no projeto. Ela contém a cópia local da biblioteca Leaflet; não é necessário instalar Node.js ou executar `npm install`.
 3. Dê duplo clique em `index.html`.
 
 É preciso estar conectado à internet para carregar o mapa.
@@ -62,8 +62,8 @@ script.js           lógica do site
 README.md
 assets/
   fotos-descarte/   imagens da seção de descarte
-node_modules/
-  leaflet/          biblioteca do mapa
+leaflet/
+  dist/              biblioteca Leaflet e seus estilos
 docs/
   requisitos.pdf    documento de requisitos
   entidades.md      lista de entidades e atributos
@@ -119,4 +119,3 @@ A lista de entidades, atributos e relações está em [`docs/entidades.md`](docs
 - Os dias e horários de coleta (`coletaEstimada`) são estimativas.
 - Os pontos de coleta ficam na região de Artur Alvim e arredores.
 - Mapa: © OpenStreetMap contributors.
-

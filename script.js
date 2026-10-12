@@ -77,11 +77,7 @@ function renderizarMateriais() {
     const lista = document.querySelector("#materiais-lista");
     const busca = document.querySelector("#material-busca");
     const filtro = document.querySelector("#material-filtro");
-    const contagem = document.querySelector("#materiais-contagem");
-
-    if (!Array.isArray(dados.materiais)) {
-        throw new Error("A lista de materiais não está disponível em DADOS_MAPA.");
-    }
+    const contagem = document.querySelector("#materiais-contagem"); 
 
     const tipos = [...new Set(dados.materiais.map(material => material.tipo))].sort((a, b) =>
         a.localeCompare(b, "pt-BR")
