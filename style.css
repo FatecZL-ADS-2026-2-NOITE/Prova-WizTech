@@ -243,10 +243,20 @@ main {
     }
 }
 
+#creditos h2 {
+    margin-bottom: 20px;
+}
+
+footer{
+    padding: 40px 20px; 
+    background: linear-gradient(to right, #2ecc71, #27ae60, #2980b9);
+    color: white;
+}
 
 
 
 
+/*Mapa*/
 
 #map-section {
     position: relative;
