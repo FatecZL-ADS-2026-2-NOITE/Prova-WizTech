@@ -1,7 +1,7 @@
 # Lista de Entidades e Atributos
 
 **Projeto 3 · Guia de Coleta Seletiva do Bairro**  
-Time WizTech · Cliente (fictício): Associação de Moradores do Jardim Camila  
+Time WizTech · Cliente (fictício): Associação de Moradores de Artur Alvim
 FATEC ZL · Análise e Desenvolvimento de Sistemas · Projeto Desafio 01
 
 Regra usada: substantivo vira entidade, característica vira atributo, verbo que liga dois substantivos vira relação.
