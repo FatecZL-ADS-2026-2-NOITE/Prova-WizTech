@@ -51,12 +51,13 @@
         <div class="map-intro">
             <hr>
             <h2>Mapa</h2>
-            <span><p>Explore o mapa para localizar os pontos de coleta disponíveis na sua região e descobrir onde descartar seus resíduos corretamente.</p></span>
+            <p>Explore o mapa para localizar os pontos de coleta disponíveis na sua região e descobrir onde descartar seus resíduos corretamente.</p>
         </div>
 
-    <section id="map-section">
+    <section id="map-section" aria-labelledby="map-section-title">
+        <h2 class="visually-hidden" id="map-section-title">Mapa interativo de pontos de coleta</h2>
     
-        <div class="map-controls" aria-label="Filtros de pontos no mapa">
+        <div class="map-controls" role="group" aria-label="Filtros de pontos no mapa">
             <div class="filter-group area-filters" role="group" aria-label="Filtrar por região">
                 <span class="filter-label">Região</span>
                 <button class="filter-btn active" type="button" data-filter-group="area" data-filter="todos">Todas</button>
