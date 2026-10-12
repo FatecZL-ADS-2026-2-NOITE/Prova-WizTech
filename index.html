@@ -79,53 +79,50 @@
         <div id="map"></div>
     </section>
 
-    <hr style="margin: 50px";>
+    <hr style="margin: 50px;">
     
-   <section>
-        <div id="tipo-lixo" style="text-align: center; margin: 20px;">
-            <h2>Onde descartar cada tipo de resíduo?</h2>
-            <p>Cada ponto de coleta possui uma finalidade específica. Conheça os principais locais de descarte
-                 e saiba onde levar seus resíduos para contribuir com a preservação do meio ambiente.</p>
+   <section id="tipo-lixo-section">
+        <div id="tipo-lixo">
+            <h2 style="margin-bottom: 20px;">Onde descartar cada tipo de resíduo?</h2>
+            <p>Cada ponto de coleta possui uma finalidade específica. Conheça os principais locais de descarte e saiba onde levar seus resíduos para contribuir com a preservação do meio ambiente.</p>
         </div>
-        <div style="display:flex; flex-direction: column; gap: 20px; text-align:center; text-wrap: balance;">
+        
+        <div class="lixo-container">
 
-            <div style="display: flex;">
-                <img src="assets/fotos-descarte/ecoponto_imagem.jpg" style="width:300px; height:400px;">
-                <div style="gap: 20px;">
+            <!-- Card 1 -->
+            <div class="lixo-card">
+                <div class="lixo-img-wrapper">
+                    <img src="assets/fotos-descarte/ecoponto_imagem.jpg" alt="Foto de um Ecoponto organizado">
+                </div>
+                <div class="lixo-content">
                     <h2>Ecopontos</h2>
-                    <p style="padding: 50px">Locais gratuitos destinados ao descarte de pequenos volumes de entulho de construção e reforma,
-                    madeira, restos de poda, móveis velhos, colchões e materiais recicláveis, como papelão, plástico,
-                    vidro e metal. Algumas unidades também recebem gesso.
-                    </p>
+                    <p>Locais gratuitos destinados ao descarte de pequenos volumes de entulho de construção e reforma, madeira, restos de poda, móveis velhos, colchões e materiais recicláveis, como papelão, plástico, vidro e metal. Algumas unidades também recebem gesso.</p>
                 </div>
             </div>
 
-            <div style="display: flex;">
-                <img src="assets/fotos-descarte/PEVs_imagem.jpg" style="width:300px; height:400px;">
-                <div>
+            <!-- Card 2 invertido -->
+            <div class="lixo-card card-reverse">
+                <div class="lixo-img-wrapper">
+                    <img src="assets/fotos-descarte/PEVs_imagem.jpg" alt="Contêineres de Pontos de Entrega Voluntária">
+                </div>
+                <div class="lixo-content">
                     <h2>PEVs — Pontos de Entrega Voluntária</h2>
-                    <p style="padding: 50px">São coletores destinados ao recebimento de materiais recicláveis secos,
-                    como papel, papelão, plástico, vidro e metal. Não devem ser utilizados para 
-                    descartar resíduos orgânicos ou materiais que necessitem de coleta especializada.
-                    </p>
+                    <p>São coletores destinados ao recebimento de materiais recicláveis secos, como papel, papelão, plástico, vidro e metal. Não devem ser utilizados para descartar resíduos orgânicos ou materiais que necessitem de coleta especializada.</p>
                 </div>
             </div>
 
-            <div style="display: flex;">
-                <img src="assets/fotos-descarte/coleta_especifica_foto.jpg" style="width:300px; height:400px;">
-                    <div>
+            <!-- Card 3 -->
+            <div class="lixo-card">
+                <div class="lixo-img-wrapper">
+                    <img src="assets/fotos-descarte/coleta_especifica_foto.jpg" alt="Descarte de pilhas e eletrônicos">
+                </div>
+                <div class="lixo-content">
                     <h2>Pontos de Coleta Específica</h2>
-                    <p style="padding: 50px">Alguns resíduos precisam de cuidados especiais para evitar riscos à saúde e ao meio ambiente.
-                    Pilhas, baterias, lâmpadas, pneus e aparelhos eletrônicos devem ser encaminhados aos pontos 
-                    de logística reversa correspondentes. Medicamentos vencidos ou em desuso devem ser entregues em farmácias,
-                    drogarias ou unidades de saúde habilitadas. Já o óleo de cozinha usado deve ser levado a pontos 
-                    que aceitem esse material.
-                    </p>
-                    </div>
+                    <p>Alguns resíduos precisam de cuidados especiais para evitar riscos à saúde e ao meio ambiente. Pilhas, baterias, lâmpadas, pneus e aparelhos eletrônicos devem ser encaminhados aos pontos de logística reversa correspondentes. Medicamentos vencidos ou em desuso devem ser entregues em farmácias, drogarias ou unidades de saúde habilitadas. Já o óleo de cozinha usado deve ser levado a pontos que aceitem esse material.</p>
+                </div>
             </div>
 
         </div>
-
     </section>
 
     <hr style="margin: 50px";>
