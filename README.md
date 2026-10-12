@@ -23,10 +23,14 @@ O **AcheLixo** reúne tudo em um só lugar: o morador vê no mapa os pontos de c
 - Filtro por região (Todas, Artur Alvim e Próximos)
 - Filtro por tipo de ponto (Ecopontos, PEVs e Coleta específica)
 - Legenda com a cor de cada tipo de ponto no mapa
-- Seção "Onde descartar cada tipo de resíduo?" no fim da página, com a descrição e a foto de cada tipo de ponto
+- Delimitação de Artur Alvim e estimativa de coleta ao selecionar uma região do mapa
+- Seção "Onde descartar cada tipo de resíduo?", com descrição e foto de cada tipo de ponto
+- Guia de materiais com cartões que mostram categoria, reciclabilidade, local de descarte, tempo estimado de decomposição e dica
+- Busca de materiais por nome, tipo, local de descarte ou dica, sem diferenciar acentos
+- Filtro de materiais por tipo, combinável com a busca, e indicação da quantidade de resultados
 - Ícone do ponto de coleta que leva à descrição do resíduo
-- Menu de navegação (Início, Mapa, Tipos de Lixos e Créditos)
-- **Diferencial do projeto:** cada tipo de ponto recebe uma cor própria, definida pelo JavaScript a partir dos dados
+- Menu de navegação (Início, Mapa, Tipos de Lixos, Materiais e Créditos)
+- **Diferencial do projeto:** cores próprias identificam as categorias dos pontos no mapa e os tipos de resíduos nos cartões de materiais
 
 ---
 
@@ -76,8 +80,9 @@ docs/
 O `dados.js` define `DADOS_MAPA`, com:
 
 - **`pontos`:** 15 pontos de coleta (9 ecopontos, 4 PEVs e 2 pontos específicos)
+- **`materiais`:** materiais e orientações de descarte exibidos no guia pesquisável e filtrável
 - **`coletaEstimada`:** dias e horários estimados da coleta por região (Sul, Centro e Norte)
-- **Configurações do mapa:** centro, zoom, limites e fonte dos tiles
+- **Configurações do mapa:** centro, zoom, limites, coordenadas locais do limite de Artur Alvim e fonte dos tiles
 
 Propriedades de cada ponto:
 
