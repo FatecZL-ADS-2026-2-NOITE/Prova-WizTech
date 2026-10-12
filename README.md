@@ -1,4 +1,4 @@
-# AcheLixo · Guia de Coleta Seletiva · Jardim Camila
+# AcheLixo · Guia de Coleta Seletiva
 
 Projeto do Desafio PI · FATEC ZL · Análise e Desenvolvimento de Sistemas
 Projeto Integrador · Prof. Rodrigo dos Santos Faustino
