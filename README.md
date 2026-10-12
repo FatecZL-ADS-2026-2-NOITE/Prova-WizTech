@@ -5,7 +5,7 @@ Projeto Integrador · Prof. Rodrigo dos Santos Faustino
 
 **Time:** WizTech
 
-**Cliente (fictício):** Associação de Moradores do Jardim Camila
+**Cliente (fictício):** Associação de Moradores de Artur Alvim 
 
 ---
 
