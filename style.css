@@ -148,6 +148,34 @@ main {
     margin-top: 70px;
 }
 
+.section-intro,
+.map-intro {
+    margin: 50px;
+    text-align: center;
+    text-wrap: balance;
+}
+
+.intro-title,
+.intro-copy {
+    margin: 15px;
+}
+
+.section-divider {
+    margin: 50px;
+}
+
+.tipo-lixo-title {
+    margin-bottom: 20px;
+}
+
+.site-footer {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    text-align: center;
+    text-wrap: balance;
+}
+
 
 
 /* Um container geral */
