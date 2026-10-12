@@ -41,7 +41,7 @@ O **AcheLixo** reúne tudo em um só lugar: o morador vê no mapa os pontos de c
 | Mario Batista | Estrutura HTML (`index.html`) |
 | Gabriel Ken Kudo Lima | CSS (`style.css`) |
 | Renato Luis Ferreira dos Santos | Interação com JavaScript (`script.js`) |
-| Gabriel Delatim Marcondes de Jesus | Modelagem (`docs/entidades.md`), README e `dados.js` |
+| Gabriel Delatim Marcondes de Jesus | Modelagem (`Modelagem.md`), README e `dados.js` |
 | Samuel Elvis Lima | Entrevista e requisitos (`docs/requisitos`) |
 
 ---
@@ -105,7 +105,7 @@ Para incluir um novo ponto, basta acrescentar um objeto em `pontos`, sem alterar
 
 ## Modelagem
 
-A lista de entidades, atributos e relações está em [`docs/entidades.md`](docs/entidades.md): **PontoColeta**, **CategoriaPonto**, **TipoResiduo**, **ColetaEstimada** e a entidade associativa **PontoTipo** (relação N para N entre pontos e tipos de resíduo).
+A lista de entidades, atributos e relações está em [`Modelagem.md`](Modelagem.md): **Material**, **TipoResiduo**, **PontoColeta**, **CategoriaPonto**, **PontoTipo** e **ColetaEstimada**.
 
 ---
 
