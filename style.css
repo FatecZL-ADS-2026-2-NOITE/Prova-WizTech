@@ -145,7 +145,7 @@ header nav ul li a:hover::after {
 }
 
 main {
-    margin-top: 70px;
+    margin-top: 80px;
 }
 
 .section-intro,
@@ -157,7 +157,16 @@ main {
 
 .intro-title,
 .intro-copy {
-    margin: 15px;
+    margin: 20px;
+    color: #214f35;
+}
+
+.intro-title h2 {
+    font-size: 2.0rem; /* Ajuste o valor (2.5rem, 36px, etc.) como preferir */
+}
+
+.intro-copy{
+    color: #5c6e62;
 }
 
 .section-divider {
@@ -178,6 +187,11 @@ main {
 
 .tipo-lixo-title {
     margin-bottom: 20px;
+    color: #214f35;
+}
+
+.tipo-lixo p{
+    color: #5c6e62;
 }
 
 .site-footer {
@@ -200,6 +214,10 @@ main {
 #tipo-lixo {
     text-align: center;
     margin-bottom: 40px;
+}
+
+#tipo-lixo p{
+    color: #5c6e62;
 }
 
 .lixo-container {
@@ -285,6 +303,11 @@ main {
 
 #creditos h2 {
     margin-bottom: 20px;
+    color: #214f35;
+}
+
+#creditos div p{
+    color: #5c6e62;
 }
 
 footer{
@@ -297,6 +320,16 @@ footer{
 
 
 /*Mapa*/
+
+.map-intro h2{
+    color: #214f35;
+    margin-bottom: 15px;
+
+}
+
+.map-intro p{
+    color: #5c6e62;
+}
 
 #map-section {
     position: relative;
